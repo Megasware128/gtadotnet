@@ -11,12 +11,12 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("GTAScriptHook")];
+[assembly:AssemblyTitleAttribute("GTA .NET Script Hook")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("GTAScriptHook")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c)  2009")];
+[assembly:AssemblyCompanyAttribute("DBNetwork")];
+[assembly:AssemblyProductAttribute("gtadotnet")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) DBNetwork 2009")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -31,7 +31,7 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("1.0.*")];
+[assembly:AssemblyVersionAttribute("1.9.0.*")];
 
 [assembly:ComVisible(false)];
 

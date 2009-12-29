@@ -4,4 +4,7 @@
 
 #pragma once
 
+#include <windows.h>
 
+using namespace System;
+using namespace System::Collections::Generic;
