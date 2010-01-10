@@ -1,3 +1,4 @@
+#pragma once
 using namespace System::Threading;
 
 namespace GTA {
@@ -29,6 +30,9 @@ namespace GTA {
 	public:
 		void OnStart() { }
 		virtual void Run();
+
+		void Wait() { Wait(0); }
+		void Wait(int time);
 	};
 
 	private ref class ScriptContext {

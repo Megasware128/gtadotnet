@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GTAUtils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooking.cpp"
 				>
 			</File>
@@ -205,6 +209,10 @@
 			</File>
 			<File
 				RelativePath=".\Main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ScriptLoader.cpp"
 				>
 			</File>
 			<File
@@ -235,7 +243,15 @@
 				Name="Scripting"
 				>
 				<File
+					RelativePath=".\InternalCalls.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Script.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VarPointer.cpp"
 					>
 				</File>
 			</Filter>
@@ -250,11 +266,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GTAUtils.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooking.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScriptLoader.h"
 				>
 			</File>
 			<File
@@ -269,7 +293,15 @@
 				Name="Scripting"
 				>
 				<File
+					RelativePath=".\InternalCalls.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Script.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VarPointer.h"
 					>
 				</File>
 			</Filter>

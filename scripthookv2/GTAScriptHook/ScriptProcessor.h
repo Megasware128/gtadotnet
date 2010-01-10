@@ -1,3 +1,4 @@
+#pragma once
 #include "Script.h"
 using namespace System::Threading;
 
@@ -10,6 +11,7 @@ namespace GTA {
 		static List<ScriptContext^>^ _scripts;
 	internal:
 		void Tick(DWORD timerDelta);
+		void AddScript(Script^ script);
 	public:
 		static void Initialize() {
 			if (_instance != nullptr) {
