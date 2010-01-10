@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "GameVersion.h"
 #include "ScriptProcessor.h"
+#include "ScriptLoader.h"
 
 using namespace System::Reflection;
 
@@ -18,6 +19,7 @@ void GoManaged() {
 	GTA::Log::Info("Game version: " + GTA::GameVersion::VersionName);
 
 	GTA::ScriptProcessor::Initialize();
+	GTA::ScriptLoader::LoadScripts();
 }
 
 #pragma unmanaged

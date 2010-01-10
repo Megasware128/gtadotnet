@@ -26,6 +26,10 @@ namespace GTA {
 	#pragma managed
 #endif
 
+	void ScriptProcessor::AddScript(Script^ script) {
+		_scripts->Add(gcnew ScriptContext(script));
+	}
+
 	ScriptProcessor::ScriptProcessor() {
 #ifdef GTA_SA
 		BYTE* patchAddress = (BYTE*)0x46A22E;

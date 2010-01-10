@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Script.h"
 #include "Log.h"
+#include "InternalCalls.h"
+
+using namespace GTA::Internal;
 
 namespace GTA {
 	void TickScript::Run() {
@@ -18,6 +21,16 @@ namespace GTA {
 
 	void Script::Run() {
 
+	}
+
+	void Script::Wait(int time) {
+		ScriptContext^ context = ScriptContext::current;
+
+		Function::Call(0x0001, 0);
+
+		context->_wakeUpAt = GetTickCount() + time;
+		context->_continue->Set();
+		context->_execute->WaitOne();
 	}
 
 	ScriptContext::ScriptContext(Script^ myScript) {
