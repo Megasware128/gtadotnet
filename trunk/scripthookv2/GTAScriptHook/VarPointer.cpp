@@ -11,12 +11,12 @@ namespace GTA {
 		return source->Value;
 	}
 
-	VarPointer::VarPointer(int value) {
+	void VarPointer::Initialize(int value) {
 		varStorage[_curID] = value;
 		_varID = _curID;
 		_curID++;
 
-		if (_curID >= 64) {
+		if (_curID >= 512) {
 			_curID = 0;
 		}
 	}

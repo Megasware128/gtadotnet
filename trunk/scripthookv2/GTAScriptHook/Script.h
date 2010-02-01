@@ -2,11 +2,11 @@
 using namespace System::Threading;
 
 namespace GTA {
-	public ref class TickScript {
+/*	public ref class BaseTickScript : BaseScript {
 	private:
 		int _interval;
 	public:
-		TickScript() { _interval = 0; }
+		BaseTickScript() { _interval = 0; }
 
 		property int Interval {
 			int get() {
@@ -17,22 +17,33 @@ namespace GTA {
 			}
 		}
 
-		event Action^ Tick;
+		event EventHandler^ Tick;
 
 		virtual void OnTick() {
-			Tick();
+			Tick(this, EventArgs::Empty);
 		}
 
 		void Run();
+	};*/
+
+	value class BoundKeyData {
+	public:
+		int _keyCode;
+		Action^ _call;
 	};
 
-	public ref class Script {
+	public ref class BaseScript {
+	internal:
+		List<BoundKeyData>^ _boundKeys;
 	public:
-		void OnStart() { }
+		virtual void OnStart() { }
 		virtual void Run();
 
 		void Wait() { Wait(0); }
 		void Wait(int time);
+
+		void BindKey(Windows::Forms::Keys key, Action^ function);
+		void ProcessKeyBindings();
 	};
 
 	private ref class ScriptContext {
@@ -46,12 +57,12 @@ namespace GTA {
 		Thread^ _thread;
 		EventWaitHandle^ _execute;
 		EventWaitHandle^ _continue;
-		Script^ _myScript;
+		BaseScript^ _myScript;
 		DWORD _wakeUpAt;
 
 		String^ _identifier;
 
-		ScriptContext(Script^ script);
+		ScriptContext(BaseScript^ script);
 
 		void WakeUp();
 		void Run();

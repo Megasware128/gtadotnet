@@ -1,3 +1,5 @@
+#pragma once
+
 using namespace System::IO;
 using namespace System::Globalization;
 
@@ -27,6 +29,7 @@ namespace GTA {
 		static void Info(String^ message);
 		static void Warn(String^ message);
 		static void Error(String^ message);
+		static void Error(Exception^ exception) { Error(exception->ToString()); }
 
 		static property LogLevel CurrentLogLevel {
 			void set(LogLevel logLevel) {

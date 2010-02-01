@@ -26,6 +26,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)\GenerateBuildID\bin\$(ConfigurationName)\GenerateBuildID.exe $(ProjectDir)\AssemblyInfo.cpp"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -59,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -85,7 +86,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetPath)&quot; &quot;S:\games\san andreas\GTAScriptHook.asi&quot;"
+				CommandLine="copy /y &quot;$(TargetPath)&quot; &quot;S:\games\san andreas\GTAScriptHook.asi&quot;&#x0D;&#x0A;copy /y &quot;$(TargetPath)&quot; &quot;S:\games\gta san andreas\citizen\install\GTAScriptHook.asi&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -131,7 +132,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -179,6 +180,16 @@
 			RelativePath="System.Core.dll"
 			AssemblyName="System.Core, Version=3.5.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 			MinFrameworkVersion="196613"
+		/>
+		<AssemblyReference
+			RelativePath="System.Windows.Forms.dll"
+			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
+			MinFrameworkVersion="131072"
+		/>
+		<AssemblyReference
+			RelativePath="System.Drawing.dll"
+			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+			MinFrameworkVersion="131072"
 		/>
 	</References>
 	<Files>
@@ -239,6 +250,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\TextHook.cpp"
+				>
+			</File>
 			<Filter
 				Name="Scripting"
 				>
@@ -252,6 +267,30 @@
 				</File>
 				<File
 					RelativePath=".\VarPointer.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SA"
+				>
+				<File
+					RelativePath=".\CClientRadarArea.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CClientRadarAreaManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CPadSA.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LegacyCrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RenderWareSA.cpp"
 					>
 				</File>
 			</Filter>
@@ -289,6 +328,10 @@
 				RelativePath=".\Stdafx.h"
 				>
 			</File>
+			<File
+				RelativePath=".\TextHook.h"
+				>
+			</File>
 			<Filter
 				Name="Scripting"
 				>
@@ -302,6 +345,34 @@
 				</File>
 				<File
 					RelativePath=".\VarPointer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SA"
+				>
+				<File
+					RelativePath=".\CClientRadarAreas.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CPadSA.h"
+					>
+				</File>
+				<File
+					RelativePath=".\LegacyCrap.h"
+					>
+				</File>
+				<File
+					RelativePath=".\NativeTypes.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RenderWare.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RenderWareSA.h"
 					>
 				</File>
 			</Filter>

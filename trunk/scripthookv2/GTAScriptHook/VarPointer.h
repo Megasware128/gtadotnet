@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Log.h"
+
 namespace GTA {
 	public ref class VarPointer {
 	private:
@@ -7,17 +9,21 @@ namespace GTA {
 		static int _curID;
 
 		int _varID;
+
+		void Initialize(int value);
 	public:
 		static VarPointer() {
-			varStorage = gcnew cli::array<int>(64); // 32 * 2
+			varStorage = gcnew cli::array<int>(512);
 			_curID = 0;
 		}
 
 		VarPointer() {
-			VarPointer(0);
+			Initialize(0);
 		}
 
-		VarPointer(int value);
+		VarPointer(int value) {
+			Initialize(value);
+		}
 
 		property int Value {
 			int get() {

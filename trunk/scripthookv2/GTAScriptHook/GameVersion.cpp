@@ -37,6 +37,15 @@ namespace GTA {
 
 		_version = version;
 		_region = 'U'; // for now, we hardcode US
+
+		if (_version == 100) {
+			testAddress = (void*)0x7474D3;
+			data = "\x89\x35\xC0\xD4\xC8\x00";
+
+			if (memcmp(testAddress, data, 5) == 0) {
+				_region = 'E';
+			}
+		}
 #endif
 	}
 }
