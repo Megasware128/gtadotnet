@@ -2,14 +2,20 @@
 #include "internalcalls.h"
 #include "GTAUtils.h"
 #include "Log.h"
+#include "GameVersion.h"
 
 BYTE ScriptBuf[384];
 
 #ifdef GTA_SA
 #pragma unmanaged
-int ExecuteBuffer(BYTE *sbuf, DWORD *lvars, DWORD buflen)
+int ExecuteBuffer(BYTE *sbuf, DWORD *lvars, DWORD buflen, int gameVersion)
 {
 	LPVOID ProcessOneCommand = (LPVOID)0x469F00;
+
+	if (gameVersion == 101 || gameVersion == 200) {
+		ProcessOneCommand = (LPVOID)0x469F80;
+	}
+
 	GTASA_SCRIPT_THREAD gst, *pGst;
 
 	//logbuffer(sbuf, buflen);
@@ -39,6 +45,10 @@ int ExecuteBuffer(BYTE *sbuf, DWORD *lvars, DWORD buflen)
 
 namespace GTA {
 	namespace Internal {
+		static Function::Function() {
+			_typeHandlers = gcnew Dictionary<Type^, Func<Object^, Object^>^>();
+		}
+
 #ifdef GTA_SCM
 		bool Function::Call(unsigned int identifier, ... cli::array<GTA::Internal::Parameter,1> ^parameters) {
 			return CallRaw(identifier, parameters);
@@ -46,11 +56,18 @@ namespace GTA {
 
 		generic <typename TReturn>
 		TReturn Function::Call(unsigned int identifier, ... cli::array<GTA::Internal::Parameter,1> ^parameters) {
-			return (TReturn)Call(identifier, TReturn::typeid, parameters);
+			Object^ retval = Call(identifier, TReturn::typeid, parameters);
+
+			// ask the type handler
+			if (_typeHandlers->ContainsKey(TReturn::typeid)) {
+				return (TReturn)_typeHandlers[TReturn::typeid](retval);
+			}
+
+			return (TReturn)retval;
 		}
 
 		Object^ Function::Call(unsigned int identifier, Type^ returnType, ... cli::array<Parameter>^ parameters) {
-			int ptrCount = 1;
+			//int ptrCount = 1;
 			/*
 			if (returnType == Vector3::typeid) {
 
@@ -58,17 +75,14 @@ namespace GTA {
 			*/
 
 			int pi = parameters->Length;
-			Array::Resize(parameters, parameters->Length + ptrCount);
-			
-			for (; (pi - parameters->Length) < ptrCount; pi++) {
-				parameters[pi] = gcnew VarPointer();
-			}
+			Array::Resize(parameters, parameters->Length + 1);
 
+			parameters[pi] = gcnew VarPointer();
 			CallRaw(identifier, parameters);
 
-			if (ptrCount == 1) {
-				return ((VarPointer^)parameters[parameters->Length]._preVal)->Value;
-			}/* else {
+			//if (ptrCount == 1) {
+			return ((VarPointer^)parameters[pi]._preVal)->Value;
+			/*} else {
 			pi = parameters->Length;
 			
 			for (; (pi - parameters->Length) < ptrCount; pi++) {
@@ -77,6 +91,10 @@ namespace GTA {
 			}*/
 
 			return nullptr;
+		}
+
+		void Function::RegisterType(Type^ type, Func<Object^, Object^>^ handler) {
+			_typeHandlers->Add(type, handler);
 		}
 
 		bool Function::CallRaw(unsigned int identifier, ... cli::array<GTA::Internal::Parameter,1> ^parameters) {
@@ -115,15 +133,17 @@ namespace GTA {
 			memcpy(&ScriptBuf[buf_pos], &wait0, 4); // coincidence: it will end up with 00 01 04 00
 			buf_pos += 4;
 
+			/*
 			String^ output = "Script buffer: ";
 
-			for (int i = 0; i < buf_pos; i++) {
-				output += ScriptBuf[i].ToString("X2") + " ";
-			}
+            for (int i = 0; i < buf_pos; i++) {
+                    output += ScriptBuf[i].ToString("X2") + " ";
+            }
 
-			Log::Debug(output);
+            Log::Debug(output);
+			*/
 
-			int result = ExecuteBuffer(ScriptBuf, LocalVars, buf_pos);
+			int result = ExecuteBuffer(ScriptBuf, LocalVars, buf_pos, GameVersion::VersionNumber);
 
 			if (var_id == 0) {
 				return (result == 1);
@@ -131,9 +151,9 @@ namespace GTA {
 
 			var_id = 0;
 
-			for each (Parameter^ parameter in parameters) {
-				if (parameter->_isPointer) {
-					VarPointer^ pointer = (VarPointer^)parameter->_preVal;
+			for each (Parameter parameter in parameters) {
+				if (parameter._isPointer) {
+					VarPointer^ pointer = (VarPointer^)parameter._preVal;
 
 					pointer->Value = LocalVars[var_id];
 					var_id++;
@@ -154,6 +174,13 @@ namespace GTA {
 			Byte b3 = (Byte)(value >> 24);
 
 			_internalArray = gcnew cli::array<unsigned char>(5) { 0x01, b0, b1, b2, b3 }; // 0x01 -> type 32-bit int
+		}
+
+		Parameter::Parameter(cli::array<Byte>^ value) {
+			_preVal = value;
+			_isPointer = false;
+
+			_internalArray = value;
 		}
 
 		Parameter::Parameter(float value) {
@@ -190,6 +217,18 @@ namespace GTA {
 			return ((VarPointer^)_preVal)->Value;
 		}
 
+		Parameter::Parameter(GlobalVariable^ value) {
+			_isPointer = false;
+			_preVal = value;
+
+			unsigned short id = (value->ID * 4);
+
+			Byte b0 = (Byte)id;
+			Byte b1 = (Byte)(id >> 8);
+
+			_internalArray = gcnew cli::array<unsigned char>(3) { 0x02, b0, b1 };
+		}
+
 		Parameter::Parameter(String^ value) {
 			_isPointer = false;
 			_preVal = value;
@@ -201,6 +240,28 @@ namespace GTA {
 			cli::array<unsigned char>^ text = Text::Encoding::ASCII->GetBytes(value);
 			Array::Copy(text, 0, _internalArray, 2, value->Length);
 #endif
+		}
+
+		DWORD* GlobalVariable::GetAddress() {
+			DWORD* baseAddress = (DWORD*)0xA49960;
+
+			if (GameVersion::VersionNumber == 101 || GameVersion::VersionNumber == 200) {
+				baseAddress = (DWORD*)0xA4BFE0;
+			}
+
+			baseAddress += ID;
+
+			return baseAddress;
+		}
+
+		int GlobalVariable::Value::get() {
+			return *(GetAddress());
+		}
+
+		void GlobalVariable::Value::set(int value) {
+			DWORD* ad = GetAddress();
+
+			*ad = value;
 		}
 #endif
 	}

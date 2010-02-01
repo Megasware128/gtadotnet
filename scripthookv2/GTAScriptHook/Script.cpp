@@ -2,38 +2,65 @@
 #include "Script.h"
 #include "Log.h"
 #include "InternalCalls.h"
+#include "GTAUtils.h"
+#include "ScriptProcessor.h"
 
 using namespace GTA::Internal;
+using namespace System::Threading;
 
 namespace GTA {
-	void TickScript::Run() {
+	/*void TickScript::Run() {
 		while (true) {
 			ScriptContext^ context = ScriptContext::current;
 
 			// lalala, ticking the member function
 			OnTick();
 
-			context->_wakeUpAt = GetTickCount() + _interval;
+			context->_wakeUpAt = GTAUtils::GetGameTimer() + _interval;
 			context->_continue->Set();
 			context->_execute->WaitOne();
 		}
+	}*/
+
+	void BaseScript::BindKey(Windows::Forms::Keys key, Action^ function) {
+		if (_boundKeys == nullptr) {
+			_boundKeys = gcnew List<BoundKeyData>();
+		}
+
+		BoundKeyData data;
+		data._keyCode = (int)key;
+		data._call = function;
+
+		_boundKeys->Add(data);
 	}
 
-	void Script::Run() {
+	void BaseScript::ProcessKeyBindings() {
+		if (_boundKeys == nullptr) {
+			_boundKeys = gcnew List<BoundKeyData>();
+		}
+
+		for each (BoundKeyData binding in _boundKeys) {
+			if (ScriptProcessor::Instance->_keys[binding._keyCode]) {
+				binding._call();
+			}
+		}
+	}
+
+	void BaseScript::Run() {
 
 	}
 
-	void Script::Wait(int time) {
+	void BaseScript::Wait(int time) {
 		ScriptContext^ context = ScriptContext::current;
 
 		Function::Call(0x0001, 0);
 
-		context->_wakeUpAt = GetTickCount() + time;
+		context->_wakeUpAt = GTAUtils::GetGameTimer() + time;
 		context->_continue->Set();
 		context->_execute->WaitOne();
 	}
 
-	ScriptContext::ScriptContext(Script^ myScript) {
+	ScriptContext::ScriptContext(BaseScript^ myScript) {
 		_wakeUpAt = 0;
 		_endNext = false;
 		_execute = gcnew EventWaitHandle(false, EventResetMode::AutoReset);
@@ -50,7 +77,7 @@ namespace GTA {
 	}
 
 	void ScriptContext::WakeUp() {
-		DWORD currentTime = GetTickCount();
+		DWORD currentTime = GTAUtils::GetGameTimer();
 
 		if (currentTime >= _wakeUpAt) {
 			// execute the script
@@ -64,6 +91,8 @@ namespace GTA {
 	}
 
 	void ScriptContext::Run() {
+		Thread::CurrentThread->CurrentCulture = gcnew Globalization::CultureInfo("en-US");
+
 		// wait for first initialization attempt
 		_execute->WaitOne();
 
@@ -72,6 +101,8 @@ namespace GTA {
 			_myScript->OnStart();
 
 			// we should wait a tick first before running the main script loop
+			// commented out (2010-01-23): why is this needed?
+			// re-enabled (2010-01-25): this gives all scripts the chance to OnStart before other scripts go 'round.
 			_continue->Set();
 			_execute->WaitOne();
 

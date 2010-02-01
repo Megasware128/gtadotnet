@@ -5,6 +5,8 @@
 namespace GTA {
 	namespace Internal {
 #ifdef GTA_SCM
+		ref class GlobalVariable;
+
 		public value class Parameter {
 		internal:
 			bool _isPointer;
@@ -36,17 +38,65 @@ namespace GTA {
 			static operator Parameter(VarPointer^ value) {
 				return Parameter(value);
 			}
+
+			Parameter(GlobalVariable^ value);
+
+			static operator Parameter(GlobalVariable^ value) {
+				return Parameter(value);
+			}
+
+			static operator Parameter(bool value) {
+				return Parameter(value ? 1 : 0);
+			}
+
+			Parameter(cli::array<Byte>^ value);
+
+			static operator Parameter(cli::array<Byte>^ value) {
+				return Parameter(value);
+			}
 		};
 
 		public ref class Function {
 		internal:
 			static Object^ Call(unsigned int identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
 		public:
+			static Function();
+
 			static bool Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
 			generic <typename TReturn>
 			static TReturn Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+
+			static void RegisterType(Type^ type, Func<Object^, Object^>^ handler);
 		private:
 			static bool CallRaw(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+
+			static Dictionary<Type^, Func<Object^, Object^>^>^ _typeHandlers;
+		};
+
+		public ref class GlobalVariable {
+		private:
+			unsigned short _varID;
+
+			DWORD* GetAddress();
+		public:
+			GlobalVariable(unsigned short varID) {
+				_varID = varID;
+			}
+
+			static GlobalVariable^ Get(unsigned short varID) {
+				return gcnew GlobalVariable(varID);
+			}
+
+			property unsigned short ID {
+				unsigned short get() {
+					return _varID;
+				}
+			}
+
+			property int Value {
+				int get();
+				void set(int value);
+			}
 		};
 #endif
 	}

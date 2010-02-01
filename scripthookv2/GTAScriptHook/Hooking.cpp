@@ -78,7 +78,7 @@ void StompHook::initialize(const char* pOriginalCode, BYTE countBytes, PBYTE pla
 {
 	pPlace = place;
 	bCountBytes = countBytes < sizeof(bOriginalCode) ? countBytes : sizeof(bOriginalCode);
-	memcpy(bOriginalCode, pOriginalCode, bCountBytes);
+	memcpy(bOriginalCode, pPlace, bCountBytes);
 }
 
 int StompHook::installHook(void (*hookToInstall)(), bool useJump, bool unprotect)

@@ -26,8 +26,20 @@ namespace GTA {
 	#pragma managed
 #endif
 
-	void ScriptProcessor::AddScript(Script^ script) {
-		_scripts->Add(gcnew ScriptContext(script));
+	void ScriptProcessor::AddScript(BaseScript^ script) {
+		if (!_inLock) {
+			_scripts->Add(gcnew ScriptContext(script));
+		} else {
+			ThreadPool::QueueUserWorkItem(gcnew WaitCallback(this, &ScriptProcessor::WaitForAddScript), script);
+		}
+	}
+
+	void ScriptProcessor::WaitForAddScript(Object^ script) {
+		while (_inLock) {
+			Thread::Sleep(0);
+		}
+
+		AddScript((BaseScript^)script);
 	}
 
 	ScriptProcessor::ScriptProcessor() {
@@ -43,10 +55,17 @@ namespace GTA {
 #endif
 	}
 
+	void ScriptProcessor::CheckKeys() {
+		for (int x = 0; x < 256; x++) {
+			_keys[x] = (char) (GetAsyncKeyState(x) >> 8);
+		}
+	}
+
 	void ScriptProcessor::Tick(DWORD timerDelta) {
-		//Controls::CheckKeys();
+		CheckKeys();
 		List<ScriptContext^>^ toRemove = gcnew List<ScriptContext^>();
 
+		_inLock = true;
 		for each (ScriptContext^ script in _scripts) {
 			script->WakeUp();
 
@@ -54,10 +73,13 @@ namespace GTA {
 				toRemove->Add(script);
 			}
 		}
+		_inLock = false;
 
 		for each (ScriptContext^ script in toRemove) {
 			script->Clean();
 			_scripts->Remove(script);
 		}
+
+		RawTick(timerDelta);
 	}
 }

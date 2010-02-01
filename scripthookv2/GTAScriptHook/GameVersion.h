@@ -1,3 +1,5 @@
+#pragma once
+
 namespace GTA {
 	public ref class GameVersion {
 	private:
@@ -11,6 +13,12 @@ namespace GTA {
 		static property int VersionNumber {
 			int get() {
 				return _version;
+			}
+		}
+
+		static property char Region {
+			char get() {
+				return _region;
 			}
 		}
 

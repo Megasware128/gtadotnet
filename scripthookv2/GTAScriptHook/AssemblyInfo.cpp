@@ -31,7 +31,10 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("1.9.0.*")];
+// ##GENVERSION
+[assembly:AssemblyVersionAttribute("2010.01.29.1459")];
+// #/GENVERSION
+//
 
 [assembly:ComVisible(false)];
 
