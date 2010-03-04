@@ -83,6 +83,12 @@ namespace GTA {
 			this->GetInterface()->m_nIdentifier = 0;
 		}
 
+		property int Type {
+			int get() {
+				return internalInterface->m_nType;
+			}
+		}
+
 		property SVector^ Position {
 			SVector^ get() {
 				CVector position = internalInterface->m_mat.vPos;
@@ -1302,6 +1308,10 @@ public:
 #define FUNC_CTaskSimpleGangDriveBy__Constructor        0x6217d0
 #define FUNC_SetTask					0x681AF0
 
+public ref class NativeFunctions {
+public:
+	static void OverridePedSpawn(cli::array<int>^ peds);
+};
 }
 
 #endif

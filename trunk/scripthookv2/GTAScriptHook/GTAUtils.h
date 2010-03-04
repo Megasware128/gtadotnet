@@ -6,6 +6,8 @@ namespace GTA {
 	public ref class GTAUtils {
 	private:
 		GTAUtils() { }
+	internal:
+		static void RebaseNearOpcode(BYTE* command, BYTE* originalLocation, BYTE* newLocation);
 	public:
 		static float ConvertIntAsFloat(int integer) {
 			float retval;

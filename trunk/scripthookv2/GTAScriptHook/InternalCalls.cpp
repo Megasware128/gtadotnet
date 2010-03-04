@@ -45,11 +45,18 @@ int ExecuteBuffer(BYTE *sbuf, DWORD *lvars, DWORD buflen, int gameVersion)
 
 namespace GTA {
 	namespace Internal {
+#ifdef GTA_SCO
+		bool Function::Call(unsigned int identifier) {
+			return CallRaw(identifier);
+		}
+
+		bool Function::CallRaw
+#endif
+#ifdef GTA_SCM
 		static Function::Function() {
 			_typeHandlers = gcnew Dictionary<Type^, Func<Object^, Object^>^>();
 		}
 
-#ifdef GTA_SCM
 		bool Function::Call(unsigned int identifier, ... cli::array<GTA::Internal::Parameter,1> ^parameters) {
 			return CallRaw(identifier, parameters);
 		}
@@ -166,6 +173,7 @@ namespace GTA {
 
 		Parameter::Parameter(int value) {
 			_preVal = value;
+			_dataType = 2;
 			_isPointer = false;
 
 			Byte b0 = (Byte)value;
@@ -186,6 +194,7 @@ namespace GTA {
 		Parameter::Parameter(float value) {
 			_preVal = value;
 			_isPointer = false;
+			_dataType = 3;
 
 			// this is not an int, this is just to be able to access it as an int
 			int valueC = GTAUtils::ConvertFloatAsInt(value);
@@ -201,6 +210,7 @@ namespace GTA {
 		Parameter::Parameter(VarPointer^ value) {
 			_isPointer = true;
 			_preVal = value;
+			_dataType = 4;
 			_internalArray = gcnew cli::array<unsigned char>(3) { 0x03, 0, 0 };
 		}
 
@@ -220,6 +230,7 @@ namespace GTA {
 		Parameter::Parameter(GlobalVariable^ value) {
 			_isPointer = false;
 			_preVal = value;
+			_dataType = 6;
 
 			unsigned short id = (value->ID * 4);
 
@@ -232,6 +243,7 @@ namespace GTA {
 		Parameter::Parameter(String^ value) {
 			_isPointer = false;
 			_preVal = value;
+			_dataType = 1;
 #ifdef GTA_VC
 			_internalArray = Text::Encoding::ASCII->GetBytes(value->PadRight(8, '\0'));
 #else

@@ -50,6 +50,17 @@ namespace GTA
 
         public static List<Vehicle> GetAllVehicles()
         {
+            var handles = Pool.Vehicle.GetAllHandles();
+            var vehicles = new List<Vehicle>();
+
+            foreach (var handle in handles)
+            {
+                vehicles.Add(new Vehicle(handle));
+            }
+
+            return vehicles;
+
+#if LEGACYPOOL
             var retval = new List<Vehicle>();
             int ni = 0;
 
@@ -70,10 +81,22 @@ namespace GTA
             }
 
             return retval;
+#endif
         }
 
         public static List<Ped> GetAllPeds()
         {
+            var handles = Pool.Ped.GetAllHandles();
+            var peds = new List<Ped>();
+
+            foreach (var handle in handles)
+            {
+                peds.Add(new Ped(handle));
+            }
+
+            return peds;
+
+#if LEGACYPOOL
             var retval = new List<Ped>();
             int ni = 0;
 
@@ -94,6 +117,7 @@ namespace GTA
             }
 
             return retval;
+#endif
         }
 
         public static void SetInteriorAccess(string name, bool access)

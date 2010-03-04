@@ -53,8 +53,6 @@ namespace GTA {
 	void BaseScript::Wait(int time) {
 		ScriptContext^ context = ScriptContext::current;
 
-		Function::Call(0x0001, 0);
-
 		context->_wakeUpAt = GTAUtils::GetGameTimer() + time;
 		context->_continue->Set();
 		context->_execute->WaitOne();
@@ -121,5 +119,7 @@ namespace GTA {
 
 	void ScriptContext::HandleException(Exception^ e) {
 		Log::Error("Unhandled exception thrown by script " + this->_myScript->GetType()->Name + ": \n" + e->ToString());
+
+		ScriptProcessor::Instance->OnScriptCrashed(_myScript, e);
 	}
 }

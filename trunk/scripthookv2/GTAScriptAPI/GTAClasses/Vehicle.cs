@@ -53,6 +53,11 @@ namespace GTA
             }
         }
 
+        public void SetImmuneToNonPlayer(bool value)
+        {
+            Internal.Function.Call(0x02AA, this, value);
+        }
+
         public bool DamagedBy(Ped ped)
         {
             return Internal.Function.Call(0x051C, this, ped);

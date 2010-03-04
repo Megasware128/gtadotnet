@@ -4,6 +4,24 @@
 
 namespace GTA {
 	namespace Internal {
+#ifdef GTA_SCO
+		public ref class Function {
+		internal:
+			//static Object^ Call(unsigned int identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
+		public:
+			static Function();
+
+			static bool Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+			//generic <typename TReturn>
+			//static TReturn Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+
+			//static void RegisterType(Type^ type, Func<Object^, Object^>^ handler);
+		private:
+			static bool CallRaw(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+
+			//static Dictionary<Type^, Func<Object^, Object^>^>^ _typeHandlers;
+		};
+#endif
 #ifdef GTA_SCM
 		ref class GlobalVariable;
 
@@ -11,10 +29,12 @@ namespace GTA {
 		internal:
 			bool _isPointer;
 			cli::array<unsigned char>^ _internalArray;
-			Object^ _preVal;
 
 			int ApplyPointer(unsigned short id);
 		public:
+			Object^ _preVal;
+			int _dataType;
+
 			Parameter(int value);
 
 			static operator Parameter(int value) {

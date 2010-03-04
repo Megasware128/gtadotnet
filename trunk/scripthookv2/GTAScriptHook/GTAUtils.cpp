@@ -21,7 +21,7 @@ namespace GTA {
 	void GTAUtils::Wait(int time) {
 		ScriptContext^ context = ScriptContext::current;
 
-		Internal::Function::Call(0x0001, 0);
+		//Internal::Function::Call(0x0001, 0);
 
 		context->_wakeUpAt = GTAUtils::GetGameTimer() + time;
 		context->_continue->Set();
@@ -38,4 +38,16 @@ namespace GTA {
 		PlayerConfigureWeaponSlot(*(DWORD *)0xB7CD98, slotID);
 	}
 #endif
-}
+
+	void GTAUtils::RebaseNearOpcode(BYTE* command, BYTE* originalLocation, BYTE* newLocation) {
+		if (command[0] == 0xE9 || command[0] == 0xE8) { // jump near and call near
+			int originalPointer;
+			memcpy(&originalPointer, &command[1], sizeof(int)); // easiest to understand :p
+
+			originalPointer += (DWORD)originalLocation;
+			originalPointer -= (DWORD)newLocation;
+
+			memcpy(&command[1], &originalPointer, sizeof(int));
+		}
+	}
+} 

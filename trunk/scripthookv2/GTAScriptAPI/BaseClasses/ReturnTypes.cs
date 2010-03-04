@@ -14,6 +14,7 @@ namespace GTA
                 return GTAUtils.ConvertIntAsFloat((int)value);
             });
 
+            Internal.Function.RegisterType(typeof(HandleObject), DoHandleObject<HandleObject>);
             Internal.Function.RegisterType(typeof(Ped), DoHandleObject<Ped>);
             Internal.Function.RegisterType(typeof(Group), DoHandleObject<Group>);
             Internal.Function.RegisterType(typeof(Player), DoHandleObject<Player>);

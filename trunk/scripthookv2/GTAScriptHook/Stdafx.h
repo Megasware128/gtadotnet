@@ -14,3 +14,10 @@
 
 using namespace System;
 using namespace System::Collections::Generic;
+
+#ifdef GTA_IV
+#include "../ScriptHook/ScriptThread.h"
+#include "../ScriptHook/Game.h"
+#include "../ScriptHook/GameTypes.h"
+#include "../ScriptHook/ScriptingHelpers.h"
+#endif

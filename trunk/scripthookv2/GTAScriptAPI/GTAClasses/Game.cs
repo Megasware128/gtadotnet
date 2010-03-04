@@ -5,11 +5,51 @@ using System.Text;
 
 namespace GTA
 {
+    public class TextDictionary
+    {
+        private Dictionary<string, string> internalDict;
+
+        public TextDictionary()
+        {
+            internalDict = new Dictionary<string, string>();
+        }
+
+        public string this[string key]
+        {
+            get
+            {
+                // compatibility requires key to be ToUpper-ed
+                key = key.ToUpper();
+
+                return internalDict[key];
+            }
+            set
+            {
+                key = key.ToUpper();
+
+                internalDict[key] = value;
+                TextHook.RemoveCache(key);
+            }
+        }
+
+        public bool ContainsKey(string key)
+        {
+            key = key.ToUpper();
+            return internalDict.ContainsKey(key);
+        }
+    }
+
     public class Game
     {
         private static int _curID = 0;
 
-        public static Dictionary<string, string> CustomGXTs
+        public static string InstallFolder
+        {
+            get;
+            private set;
+        }
+
+        public static TextDictionary CustomGXTs
         {
             get;
             set;
@@ -20,7 +60,8 @@ namespace GTA
 
         static Game()
         {
-            CustomGXTs = new Dictionary<string, string>();
+            //CustomGXTs = new Dictionary<string, string>();
+            CustomGXTs = new TextDictionary();
 
             TextHook.RegisterCallback(key =>
             {
@@ -34,6 +75,8 @@ namespace GTA
 
             GamePad = new Pad(new IntPtr(0xB73458));
             GamePad2 = new Pad(new IntPtr(0xB7358C));
+
+            InstallFolder = System.Windows.Forms.Application.StartupPath;
         }
 
         public static Time Time

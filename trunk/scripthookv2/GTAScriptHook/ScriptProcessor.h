@@ -19,8 +19,13 @@ namespace GTA {
 		void Tick(DWORD timerDelta);
 		void AddScript(BaseScript^ script);
 		void CheckKeys();
+
+		void OnScriptCrashed(BaseScript^ script, Exception^ ex) {
+			ScriptCrashed(script, ex);
+		}
 	public:
 		event Action<DWORD>^ RawTick;
+		event Action<BaseScript^, Exception^>^ ScriptCrashed;
 
 		static void Initialize() {
 			if (_instance != nullptr) {

@@ -23,8 +23,8 @@ namespace GTA {
 				// version 2 seems to take a while - it may decrypt the code first?
 				// after 15 seconds the code is decrypted, and for the purposes of the audio hook,
 				// version 2 is equal to version 1.01, but with different copy protection
-				Log::Debug("Unknown game version, waiting 15 seconds to see if it is v2.");
-				Sleep(15000);
+				Log::Debug("Unknown game version, waiting 15 seconds to see if it is v2 (not).");
+				//Sleep(15000);
 
 				version = 200;
 
@@ -46,6 +46,11 @@ namespace GTA {
 				_region = 'E';
 			}
 		}
+#else
+#ifdef GTA_IV
+		_version = (int)Game::GetVersion();
+		_region = 'I';
+#endif
 #endif
 	}
 }
