@@ -114,7 +114,7 @@ namespace GTA
             }
             else
             {
-                Internal.Function.Call(0x05d3, _ped, target, 2, -1, 1.0f);
+                Internal.Function.Call(0x05d3, _ped, target, 2, -1);
             }
         }
 
@@ -176,7 +176,7 @@ namespace GTA
             }
             else
             {
-                Internal.Function.Call(0x05d3, _ped, target, 4, -1, 1.0f);
+                Internal.Function.Call(0x05d3, _ped, target, 4, -1);
             }
         }
 

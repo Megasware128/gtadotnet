@@ -34,6 +34,12 @@ namespace GTA {
 			}
 		}
 
+		property int ID {
+			int get() {
+				return _varID;
+			}
+		}
+
 		static explicit operator int (VarPointer^ source);
 		static explicit operator float (VarPointer^ source);
 	};

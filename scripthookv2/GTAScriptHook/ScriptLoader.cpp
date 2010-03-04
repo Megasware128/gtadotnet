@@ -44,15 +44,20 @@ namespace GTA {
 
 			for each (Type^ type in types) {
 				if (type->IsPublic && !type->IsAbstract) {
-					if (type->IsSubclassOf(BaseScript::typeid)) {
-						BaseScript^ script = (BaseScript^)Activator::CreateInstance(type);
+					try {
+						if (type->IsSubclassOf(BaseScript::typeid)) {
+							BaseScript^ script = (BaseScript^)Activator::CreateInstance(type);
 
-						LoadScript(script);
-					}
+							LoadScript(script);
+						}
 
-					if (type->IsSubclassOf(ScriptInitializer::typeid)) {
-						ScriptInitializer^ script = (ScriptInitializer^)Activator::CreateInstance(type);
-						script->OnGameStart();
+						if (type->IsSubclassOf(ScriptInitializer::typeid)) {
+							ScriptInitializer^ script = (ScriptInitializer^)Activator::CreateInstance(type);
+							script->OnGameStart();
+						}
+					} catch (Exception^ e) {
+						Log::Error("An exception occurred during initialization of the script " + type->Name + ".");
+						Log::Error(e);
 					}
 				}
 			}

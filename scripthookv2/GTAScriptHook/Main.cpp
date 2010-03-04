@@ -4,6 +4,7 @@
 #include "ScriptProcessor.h"
 #include "ScriptLoader.h"
 #include "TextHook.h"
+#include "Pool.h"
 
 using namespace System::Reflection;
 
@@ -32,6 +33,9 @@ void GoManaged() {
 #ifdef GTA_SA
 	GTA::Log::Info("compiled for GTA: San Andreas");
 #endif
+#ifdef GTA_IV
+	GTA::Log::Info("compiled for GTA IV");
+#endif
 
 	GTA::GameVersion::Detect();
 	GTA::Log::Info("Game version: " + GTA::GameVersion::VersionName);
@@ -40,13 +44,17 @@ void GoManaged() {
 	VirtualProtect((LPVOID)0x401000, 0x4A3000, PAGE_EXECUTE_READWRITE, &oldProtect);
 
 	GTA::ScriptProcessor::Initialize();
-	GTA::TextHook::Install();
 
 	try {
 		GTA::ScriptLoader::LoadScripts();
 	} catch (Exception^ e) {
 		GTA::Log::Error(e);
 	}
+
+	GTA::Pool::InitializeDefault();
+
+	Sleep(1000); // make sure we are last to hook the GXT functions
+	GTA::TextHook::Install();
 }
 
 #pragma unmanaged

@@ -161,10 +161,19 @@ namespace GTA
         }
     }
 
+    public enum BlipDisplay
+    {
+        Neither = 0,
+        MarkerOnly = 1,
+        BlipOnly = 2,
+        Both = 3
+    }
+
     public class Blip : HandleObject
     {
         private BlipIcon currentIcon;
         private BlipColor currentColor;
+        private Vector3 lastPosition;
 
         public Blip()
         {
@@ -192,6 +201,8 @@ namespace GTA
 
             blip.Size = 3; // sensible defaults, yaknow
             blip.currentIcon = icon;
+
+            blip.lastPosition = position;
 
             return blip;
         }
@@ -234,6 +245,14 @@ namespace GTA
             }
         }
 
+        public Vector3 Position
+        {
+            get
+            {
+                return lastPosition;
+            }
+        }
+
         public int Size
         {
             set
@@ -255,6 +274,14 @@ namespace GTA
             get
             {
                 return currentIcon;
+            }
+        }
+
+        public BlipDisplay Display
+        {
+            set
+            {
+                Internal.Function.Call(0x018B, this, (int)value);
             }
         }
     }

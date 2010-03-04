@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "log.h"
 
+using namespace System::Diagnostics;
+
 namespace GTA {
 	/// <summary>
 	/// Creates the log file stream and sets the initial log level.
@@ -8,7 +10,11 @@ namespace GTA {
 	/// <param name="filename">The output filename. This file will be overwritten.</param>
 	/// <param name="logLevel">The <see cref="LogLevel" /> value which sets the type of messages to output.</param>
 	void Log::Initialize(String^ filename, LogLevel logLevel) {
-		_logWriter = gcnew StreamWriter(filename, false);
+		try {
+			_logWriter = gcnew StreamWriter(filename, false);
+		} catch (IOException^) {
+			_logWriter = gcnew StreamWriter(filename + "." + Process::GetCurrentProcess()->Id.ToString());
+		}
 		_logLevel = logLevel;
 	}
 
@@ -16,7 +22,26 @@ namespace GTA {
 	/// Internal method which writes a message directly to the log file.
 	/// </summary>
 	void Log::Write(String^ message) {
-		String^ text = DateTime::Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo::InvariantCulture) + " - " + message;
+		StackTrace^ trace = gcnew StackTrace();
+		StackFrame^ frame;
+
+		for (int i = 0; i < trace->FrameCount; i++) {
+			frame = trace->GetFrame(i);
+
+			try {
+				if (!frame->GetMethod()->DeclaringType->Assembly->FullName->Contains("GTAScript")) {
+					break;
+				}
+			} catch (NullReferenceException^) { }
+		}
+
+		String^ caller = "";
+		
+		if (frame->GetMethod()->DeclaringType != nullptr) {
+			caller = frame->GetMethod()->DeclaringType->Name + ": ";
+		}
+
+		String^ text = DateTime::Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo::InvariantCulture) + " - " + caller + message;
 
 		_logWriter->WriteLine(text);
 		_logWriter->Flush();

@@ -36,7 +36,7 @@ namespace GTA
             var matches = Regex.Matches(gtadat, "^IDE (.*?)$", RegexOptions.Multiline);
 
             // pre-compile the line regex
-            var objsLine = new Regex("^([0-9]*?), (.*?), (.*?), (.*?), (.*?)$", RegexOptions.Multiline);
+            var objsLine = new Regex("^([0-9]+?),?\\s+(.*?),?\\s+(.*?),\\s+(.*?),\\s+(.*?)$", RegexOptions.Multiline);
 
             foreach (Match match in matches)
             {
@@ -53,9 +53,25 @@ namespace GTA
 
                 foreach (Match line in imatches)
                 {
-                    Models[line.Groups[2].Value.Trim().ToLower()] = int.Parse(line.Groups[1].Value);
+                    int value = -1;
+
+                    if (int.TryParse(line.Groups[1].Value.Trim(), out value))
+                    {
+                        Models[line.Groups[2].Value.Trim().ToLower()] = value;
+                    }
+                    else
+                    {
+                        Log.Info("Could not read model line: " + line.Groups[0].Value);
+                    }
                 }
             }
+        }
+
+        public static bool IsKnown(string name)
+        {
+            LoadIDE();
+
+            return Models.ContainsKey(name.ToLower());
         }
         #endregion
 

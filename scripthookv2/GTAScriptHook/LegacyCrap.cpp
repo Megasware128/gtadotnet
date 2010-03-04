@@ -137,10 +137,35 @@ DWORD PlaceMarker(bool bZCheck, float fPulseFraction, BYTE r, BYTE g, BYTE b, BY
 	return dwReturn;
 }
 
+void _nativeOverridePeds(int* peds) {
+	DWORD dwFunc = 0x40BDA0;
+	DWORD dwPtr = (DWORD)peds;
+
+	__asm {
+		push dwPtr
+		call dwFunc
+		add esp, 4
+	}
+}
+
 #pragma warning(default: 4409)
 #pragma managed
 
 namespace GTA {
+	void NativeFunctions::OverridePedSpawn(cli::array<int>^ peds) {
+		int pedids[8];
+
+		for (int i = 0; i < 8; i++) {
+			if (i < peds->Length) {
+				pedids[i] = peds[i];
+			} else {
+				pedids[i] = -1;
+			}
+		}
+
+		_nativeOverridePeds(&pedids[0]);
+	}
+
 	static GTA3DMarkers::GTA3DMarkers() {
 		Markers = gcnew array<GTA3DMarker^>(32);
 

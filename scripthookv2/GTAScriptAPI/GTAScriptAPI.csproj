@@ -34,6 +34,24 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'GTA IV Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\GTA IV Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'IVDebug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\IVDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -50,6 +68,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClasses\CrashWarning.cs" />
+    <Compile Include="BaseClasses\RotationMatrix.cs" />
     <Compile Include="BaseClasses\ReturnTypes.cs" />
     <Compile Include="BaseClasses\Script.cs" />
     <Compile Include="Compatibility\SanAndreasScriptHook.cs" />
@@ -92,6 +112,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>copy /y "$(TargetPath)" "S:\games\san andreas\GTAScriptAPI.dll"
+copy /y "$(TargetPath)" "S:\games\gta san andreas\GTAScriptAPI.dll"
 copy /y "$(TargetPath)" "S:\games\gta san andreas\citizen\install\GTAScriptAPI.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
