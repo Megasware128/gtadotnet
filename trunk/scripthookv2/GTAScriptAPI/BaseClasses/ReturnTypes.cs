@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GTA
 {
-    public class ReturnTypes : ScriptInitializer
+    public class ReturnTypes : ScriptPostInitializer
     {
         public override void OnGameStart()
         {

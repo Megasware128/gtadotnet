@@ -73,8 +73,7 @@ namespace GTA
             get
             {
                 VarPointer vp = new VarPointer();
-                return Internal.Function.Call<int>(0x07F6, this, vp, new VarPointer());
-
+                Internal.Function.Call(0x07F6, this, vp, new VarPointer());
                 return (int)vp;
             }
         }

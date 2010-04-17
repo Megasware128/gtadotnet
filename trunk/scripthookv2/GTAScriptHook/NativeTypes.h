@@ -5,15 +5,6 @@
 #include <windows.h>
 #include <math.h>
 
-namespace GTA {
-	public ref class SVector {
-	public:
-		float pX, pY, pZ;
-
-		SVector(float X, float Y, float Z) : pX(X), pY(Y), pZ(Z) { } 
-	};
-}
-
 typedef DWORD RGBA;
 typedef DWORD BGRA;
 typedef DWORD ARGB;

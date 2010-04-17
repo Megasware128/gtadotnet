@@ -5,6 +5,7 @@
 #include "ScriptLoader.h"
 #include "TextHook.h"
 #include "Pool.h"
+#include "ScriptDomain.h"
 
 using namespace System::Reflection;
 
@@ -28,10 +29,13 @@ void GoManaged() {
 
 	// we're really managed now :)
 
-	GTA::Log::Initialize("GTAScriptHook.log", GTA::LogLevel::Debug | GTA::LogLevel::Info | GTA::LogLevel::Warning | GTA::LogLevel::Error);
+	GTA::Log::Initialize("GTAScriptHook.log", GTA::LogLevel::Debug | GTA::LogLevel::Info | GTA::LogLevel::Warning | GTA::LogLevel::Error, true);
 	GTA::Log::Info("DBNetwork GTA .NET Scripting API (built on " + GetBuildVersion(Assembly::GetCallingAssembly()->GetName()->Version) + ")");
 #ifdef GTA_SA
 	GTA::Log::Info("compiled for GTA: San Andreas");
+#endif
+#ifdef GTA_III
+	GTA::Log::Info("compiled for GTA III");
 #endif
 #ifdef GTA_IV
 	GTA::Log::Info("compiled for GTA IV");
@@ -43,15 +47,21 @@ void GoManaged() {
 	DWORD oldProtect;
 	VirtualProtect((LPVOID)0x401000, 0x4A3000, PAGE_EXECUTE_READWRITE, &oldProtect);
 
-	GTA::ScriptProcessor::Initialize();
+	AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(&GTA::ScriptLoader::ResolveAssembly);
+
+	//GTA::ScriptProcessor::Initialize();
+	GTA::ScriptProcessor::Hook();
+	GTA::ScriptDomain::CreateDomain();
+	GTA::ScriptLoader^ loader = GTA::ScriptDomain::CreateScriptLoader();
+	loader->Initialize();
 
 	try {
-		GTA::ScriptLoader::LoadScripts();
+		loader->LoadScripts();
 	} catch (Exception^ e) {
 		GTA::Log::Error(e);
 	}
 
-	GTA::Pool::InitializeDefault();
+	//GTA::Pool::InitializeDefault();
 
 	Sleep(1000); // make sure we are last to hook the GXT functions
 	GTA::TextHook::Install();

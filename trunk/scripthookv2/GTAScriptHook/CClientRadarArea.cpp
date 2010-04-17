@@ -19,17 +19,27 @@
 #ifdef GTA_SA
 #include "CClientRadarAreas.h"
 #include "Hooking.h"
+#include "ScriptDomain.h"
+
+bool installed = false;
 
 namespace GTA {
 
 StompHook radarAreaHook;
 
-void PulseRadars() {
-	if (GTA::CClientRadarArea::m_pRadarAreaManager == nullptr) {
-		GTA::CClientRadarArea::m_pRadarAreaManager = gcnew GTA::CClientRadarAreaManager();
-	} else {
-		GTA::CClientRadarArea::m_pRadarAreaManager->DoPulse();
+ref class PulseRadarWorker {
+internal:
+	static void PulseRadars() {
+		if (GTA::CClientRadarArea::m_pRadarAreaManager == nullptr) {
+			GTA::CClientRadarArea::m_pRadarAreaManager = gcnew GTA::CClientRadarAreaManager();
+		} else {
+			GTA::CClientRadarArea::m_pRadarAreaManager->DoPulse();
+		}
 	}
+};
+
+void PulseRadars() {
+	ScriptDomain::_scriptDomain->DoCallBack(gcnew CrossAppDomainDelegate(&PulseRadarWorker::PulseRadars));
 }
 
 void _declspec(naked) HOOK_CRadar__DrawRadarGangOverlay()
@@ -49,8 +59,12 @@ void _declspec(naked) HOOK_CRadar__DrawRadarGangOverlay()
 }
 
 void RadarHook::Install() {
-	radarAreaHook.initialize("aaaaaa", 6, (PBYTE)0x586650);
-	radarAreaHook.installHook(HOOK_CRadar__DrawRadarGangOverlay, true, true);
+	if (!installed) {
+		radarAreaHook.initialize("aaaaaa", 6, (PBYTE)0x586650);
+		radarAreaHook.installHook(HOOK_CRadar__DrawRadarGangOverlay, true, true);
+
+		installed = true;
+	}
 }
 
 #pragma unmanaged

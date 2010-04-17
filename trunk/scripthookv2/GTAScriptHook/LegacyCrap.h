@@ -20,6 +20,9 @@ struct ColorRGBA {
 
 namespace GTA {
 	class CEntitySAInterface;
+
+	typedef BOOL (__cdecl *WorldCoords2ScreenCoords_t)(CVector * inPoint, CVector * outpoint, float * x, float * y, char, char);
+	static WorldCoords2ScreenCoords_t WorldCoords2ScreenCoords = (WorldCoords2ScreenCoords_t)0x70CE30;
 }
 
 namespace GTA {	
@@ -1311,6 +1314,11 @@ public:
 public ref class NativeFunctions {
 public:
 	static void OverridePedSpawn(cli::array<int>^ peds);
+	static void PlayFrontendAudio(int audioID);
+	static float GetCameraFOV();
+	static void SetCameraFOV(float value);
+
+	static SVector^ GetScreenCoords(SVector^ world);
 };
 }
 

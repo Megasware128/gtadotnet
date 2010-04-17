@@ -1,4 +1,9 @@
 #pragma once
+
+#if defined ( Yield ) 
+#undef Yield 
+#endif 
+
 using namespace System::Threading;
 
 namespace GTA {
@@ -33,11 +38,23 @@ namespace GTA {
 	};
 
 	public ref class BaseScript {
+	private:
+		static bool _keyBindingsDisabled;
 	internal:
 		List<BoundKeyData>^ _boundKeys;
 	public:
 		virtual void OnStart() { }
 		virtual void Run();
+
+		static property bool DisableKeyBindings {
+			bool get() {
+				return _keyBindingsDisabled;
+			}
+
+			void set(bool value) {
+				_keyBindingsDisabled = value;
+			}
+		}
 
 		void Wait() { Wait(0); }
 		void Wait(int time);
@@ -65,6 +82,7 @@ namespace GTA {
 		ScriptContext(BaseScript^ script);
 
 		void WakeUp();
+		void Yield();
 		void Run();
 		void Clean();
 	};

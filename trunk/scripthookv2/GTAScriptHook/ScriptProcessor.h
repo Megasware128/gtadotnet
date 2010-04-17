@@ -5,8 +5,6 @@ using namespace System::Threading;
 namespace GTA {
 	public ref class ScriptProcessor {
 	private:
-		ScriptProcessor();
-
 		static ScriptProcessor^ _instance;
 		static List<ScriptContext^>^ _scripts;
 
@@ -14,11 +12,16 @@ namespace GTA {
 
 		void WaitForAddScript(Object^ script);
 	internal:
+		static void Hook();
+
+		static String^ _hookVersion;
+
 		cli::array<Byte>^ _keys;
 
 		void Tick(DWORD timerDelta);
 		void AddScript(BaseScript^ script);
 		void CheckKeys();
+		void UnloadScripts();
 
 		void OnScriptCrashed(BaseScript^ script, Exception^ ex) {
 			ScriptCrashed(script, ex);
@@ -41,6 +44,12 @@ namespace GTA {
 		property cli::array<Byte>^ KeyBuffer {
 			cli::array<Byte>^ get() {
 				return _keys;
+			}
+		}
+
+		static property String^ HookVersion {
+			String^ get() {
+				return _hookVersion;
 			}
 		}
 

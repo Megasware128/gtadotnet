@@ -20,4 +20,9 @@ namespace GTA {
 			_curID = 0;
 		}
 	}
+
+	void* VarPointer::CreatePointer() {
+		pin_ptr<int> ptr = &varStorage[_varID];
+		return (void*)ptr;
+	}
 }

@@ -24,11 +24,20 @@ namespace GTA {
 		}
 
 		static int GetGameTimer() {
+#ifdef GTA_SA
 			DWORD* timer = (DWORD*)0xB7CB84;
 
 			if (GameVersion::VersionNumber == 101 || GameVersion::VersionNumber == 200) {
 				timer = (DWORD*)0xB7F204;
 			}
+#endif
+#ifdef GTA_III
+			DWORD* timer = (DWORD*)0x885B48;
+#endif
+#if GTA_IV
+			DWORD timerV = GetTickCount();
+			DWORD* timer = &timerV;
+#endif
 
 			return *timer;
 		}
@@ -37,6 +46,7 @@ namespace GTA {
 
 #ifdef GTA_SA
 		static void SetPlayerWeaponSlot(int slotID);
+		static void LoadGameNatively();
 #endif
 	};
 }

@@ -4,26 +4,9 @@
 
 namespace GTA {
 	namespace Internal {
-#ifdef GTA_SCO
-		public ref class Function {
-		internal:
-			//static Object^ Call(unsigned int identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
-		public:
-			static Function();
-
-			static bool Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
-			//generic <typename TReturn>
-			//static TReturn Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
-
-			//static void RegisterType(Type^ type, Func<Object^, Object^>^ handler);
-		private:
-			static bool CallRaw(unsigned int identifier, ... cli::array<Parameter>^ parameters);
-
-			//static Dictionary<Type^, Func<Object^, Object^>^>^ _typeHandlers;
-		};
-#endif
-#ifdef GTA_SCM
+#if GTA_SCM
 		ref class GlobalVariable;
+#endif
 
 		public value class Parameter {
 		internal:
@@ -59,11 +42,13 @@ namespace GTA {
 				return Parameter(value);
 			}
 
+#if GTA_SCM
 			Parameter(GlobalVariable^ value);
 
 			static operator Parameter(GlobalVariable^ value) {
 				return Parameter(value);
 			}
+#endif
 
 			static operator Parameter(bool value) {
 				return Parameter(value ? 1 : 0);
@@ -76,6 +61,36 @@ namespace GTA {
 			}
 		};
 
+#ifdef GTA_SCO
+		public ref class Function {
+		internal:
+			static Object^ Call(String^ identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
+			static Object^ CallResult(String^ identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
+		public:
+			static Function();
+
+			static bool Call(String^ identifier, ... cli::array<Parameter>^ parameters);
+			static bool Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+			generic <typename TReturn>
+			static TReturn Call(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+			generic <typename TReturn>
+			static TReturn Call(String^ identifier, ... cli::array<Parameter>^ parameters);
+			generic <typename TReturn>
+			static TReturn CallResult(unsigned int identifier, ... cli::array<Parameter>^ parameters);
+			generic <typename TReturn>
+			static TReturn CallResult(String^ identifier, ... cli::array<Parameter>^ parameters);
+
+			static void RegisterType(Type^ type, Func<Object^, Object^>^ handler);
+		private:
+			static bool CallRaw(String^ identifier, ... cli::array<Parameter>^ parameters);
+
+			static Dictionary<Type^, Func<Object^, Object^>^>^ _typeHandlers;
+
+			static NativeContext* curCxt;
+		};
+#endif
+
+#ifdef GTA_SCM
 		public ref class Function {
 		internal:
 			static Object^ Call(unsigned int identifier, Type^ returnType, ... cli::array<Parameter>^ parameters);
@@ -117,6 +132,8 @@ namespace GTA {
 				int get();
 				void set(int value);
 			}
+
+			virtual String^ ToString() override;
 		};
 #endif
 	}
@@ -145,4 +162,27 @@ struct GTASA_SCRIPT_THREAD	// 0xE0 bytes total
 	BYTE bWastedBustedFlag;	// 0xD4
 	DWORD dwSceneSkipIP;	// 0xD8
 	BYTE bMissionThread;	// 0xDC
+};
+
+// actually VC, but should be compatible
+struct GTA3_SCRIPT_THREAD	// 0x88 bytes total.
+{							// - Credit to CyQ & PatrickW
+	void* pNext;			// 0x00
+	void* pPrev;			// 0x04
+	char strName[8];		// 0x08
+	DWORD dwScriptIP;		// 0x10
+	DWORD dwReturnStack[6];	// 0x14
+	DWORD dwStackPointer;	// 0x2C
+	DWORD dwLocalVar[18];	// 0x30
+	BYTE bJumpFlag;			// 0x78
+	BYTE bStartNewScript;	// 0x79
+	BYTE bWorky;			// 0x7A
+	BYTE bAwake;			// 0x7B
+	DWORD dwWakeTime;		// 0x7C
+	WORD wIfParam;			// 0x80
+	BYTE bNotFlag;			// 0x82
+	BYTE bWastedBustedCheck;// 0x83
+	BYTE bWastedBustedFlag;	// 0x84
+	BYTE bMissionThread;	// 0x85
+	BYTE pad[2];			// 0x86
 };

@@ -3,15 +3,37 @@
 #include "InternalCalls.h"
 #include "ScriptLoader.h"
 #include "ScriptProcessor.h"
+#include "TextHook.h"
 #include "Log.h"
+#include "Pool.h"
+#include "GameVersion.h"
 
 using namespace System::IO;
+extern bool gameInitialized;
 
 namespace GTA {
 	Assembly^ ScriptLoader::ResolveAssembly(Object^ sender, ResolveEventArgs^ args) {
+		if (args->Name->Contains("GTAScriptHook")) {
+			Log::Debug("oh, somebody asked for us. let's return 'us'.");
+			return Assembly::GetExecutingAssembly();
+		}
+
 		for each (Assembly^ assembly in AppDomain::CurrentDomain->GetAssemblies()) {
 			if (assembly->FullName == args->Name) {
+				Log::Debug("found assembly " + assembly->FullName);
 				return assembly;
+			}
+		}
+
+		for each (String^ file in Directory::GetFiles(Environment::ExpandEnvironmentVariables("%temp%\\GTAScriptHook"))) {
+			try {
+				String^ name = FileInfo(file).FullName;
+
+				if (AssemblyName::GetAssemblyName(name)->FullName == args->Name) {
+					return Assembly::LoadFile(name);
+				}
+			} catch (Exception^) {
+				// nothing
 			}
 		}
 
@@ -30,12 +52,63 @@ namespace GTA {
 		return nullptr;
 	}
 
-	void ScriptLoader::LoadScripts() {
+	bool ScriptLoader::GameInitialized::get() {
+		return _gameInitialized;
+	}
+
+	void ScriptLoader::GameInitialized::set(bool value) {
+		_gameInitialized = value;
+	}
+
+	void ScriptLoader::Initialize() {
+		_rootDirectory = Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location);
+
+		Log::Initialize("GTAScriptHook.log", GTA::LogLevel::Debug | GTA::LogLevel::Info | GTA::LogLevel::Warning | GTA::LogLevel::Error, false);
+		Log::Debug("ScriptLoader->Initialize");
+
 		AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(&ScriptLoader::ResolveAssembly);
 
-		LoadAssemblies("scripts", "*.dll");
-		LoadAssemblies(".", "*.net"); // don't think this is going to be used anyway
-		LoadAssemblies(".", "GTAScriptAPI.dll");
+		ScriptProcessor::_hookVersion = Assembly::GetExecutingAssembly()->GetName()->Version->ToString();
+
+		GameVersion::Detect();
+
+		ScriptProcessor::Initialize();
+		TextHook::Initialize();
+		Pool::InitializeDefault();
+	}
+
+	void ScriptLoader::UnloadScripts() {
+		ScriptProcessor::Instance->UnloadScripts();
+	}
+
+	void ScriptLoader::ProxyTick(DWORD timerDelta) {
+		ScriptProcessor::Instance->Tick(timerDelta);
+	}
+
+#if GTA_SA
+	const char* ScriptLoader::ProxyGetString(const char* string) {
+#else
+	const wchar_t* ScriptLoader::ProxyGetString(const char* string) {
+#endif
+		return TextHook::GetString(string);
+	}
+
+	void ScriptLoader::LoadScripts() {
+		Log::Debug("ScriptLoader->LoadScripts");
+
+		if (!Directory::Exists(Environment::ExpandEnvironmentVariables("%temp%\\GTAScriptHook"))) {
+			Directory::CreateDirectory(Environment::ExpandEnvironmentVariables("%temp%\\GTAScriptHook"));
+		}
+
+		_loadedAssemblies = gcnew List<String^>();
+
+		AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(&ScriptLoader::ResolveAssembly);
+
+		String^ baseDir = Windows::Forms::Application::StartupPath;
+
+		LoadAssemblies(baseDir + "\\scripts", "GTAScriptAPI.dll");
+		LoadAssemblies(baseDir + "\\scripts", "*.dll");
+		LoadAssemblies(baseDir, "*.net"); // don't think this is going to be used anyway
 	}
 
 	void ScriptLoader::LoadAssembly(Assembly^ assembly) {
@@ -51,8 +124,15 @@ namespace GTA {
 							LoadScript(script);
 						}
 
-						if (type->IsSubclassOf(ScriptInitializer::typeid)) {
-							ScriptInitializer^ script = (ScriptInitializer^)Activator::CreateInstance(type);
+						if (!GameInitialized) {
+							if (type->IsSubclassOf(ScriptInitializer::typeid)) {
+								ScriptInitializer^ script = (ScriptInitializer^)Activator::CreateInstance(type);
+								script->OnGameStart();
+							}
+						}
+
+						if (type->IsSubclassOf(ScriptPostInitializer::typeid)) {
+							ScriptPostInitializer^ script = (ScriptPostInitializer^)Activator::CreateInstance(type);
 							script->OnGameStart();
 						}
 					} catch (Exception^ e) {
@@ -72,9 +152,30 @@ namespace GTA {
 		cli::array<String^>^ files = Directory::GetFiles(folder, filter);
 
 		for each (String^ file in files) {
-			Assembly^ assembly = Assembly::LoadFile(FileInfo(file).FullName);
-			
-			LoadAssembly(assembly);
+			String^ fileName = FileInfo(file).FullName;
+
+			if (!_loadedAssemblies->Contains(fileName)) {
+				String^ origTargetName = Environment::ExpandEnvironmentVariables("%temp%\\GTAScriptHook") + "\\" + Path::GetFileName(file);
+				String^ targetName = origTargetName + "";
+				bool loaded = false;
+				int i = 0;
+
+				while (!loaded) {
+					try {
+						File::Copy(fileName, targetName, true);
+						loaded = true;
+					} catch (IOException^) {
+						targetName = origTargetName->Replace(".dll", "-" + i.ToString() + ".dll");
+						i++;
+					}
+				}
+
+				Assembly^ assembly = Assembly::LoadFile(targetName);
+				
+				LoadAssembly(assembly);
+
+				_loadedAssemblies->Add(fileName);
+			}
 		}
 	}
 
