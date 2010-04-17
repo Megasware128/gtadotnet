@@ -18,10 +18,11 @@ namespace GTA {
 
 		static StreamWriter^ _logWriter;
 		static LogLevel _logLevel;
+		static String^ _filename;
 
-		static void Write(String^ message);
+		static void Write(String^ message, LogLevel level);
 	public:
-		static void Initialize(String^ filename, LogLevel logLevel);
+		static void Initialize(String^ filename, LogLevel logLevel, bool free);
 
 		static bool MayWriteType(LogLevel type);
 
@@ -30,6 +31,8 @@ namespace GTA {
 		static void Warn(String^ message);
 		static void Error(String^ message);
 		static void Error(Exception^ exception) { Error(exception->ToString()); }
+
+		static event Action<LogLevel, String^>^ EventWritten;
 
 		static property LogLevel CurrentLogLevel {
 			void set(LogLevel logLevel) {

@@ -7,6 +7,12 @@ namespace GTA
 {
     public class World
     {
+        static World()
+        {
+            _carList = new List<Vehicle>();
+            _pedList = new List<Ped>();
+        }
+
         public static Ped CreatePed(PedID model, Vector3 position, int pedtype)
         {
             return CreatePed((int)model, position, pedtype);
@@ -19,6 +25,11 @@ namespace GTA
 
         public static Ped CreatePed(Model model, Vector3 position, int pedtype)
         {
+            if (model.ID >= 290 && model.ID <= 299)
+            {
+                return Internal.Function.Call<Ped>(0x009a, pedtype, model, position);
+            }
+
             model.Load();
             var ped = Internal.Function.Call<Ped>(0x009a, pedtype, model, position);
             model.Release();
@@ -48,17 +59,20 @@ namespace GTA
             return new Vector3(position.X, position.Y, z);
         }
 
+        static List<Vehicle> _carList;
+
         public static List<Vehicle> GetAllVehicles()
         {
             var handles = Pool.Vehicle.GetAllHandles();
-            var vehicles = new List<Vehicle>();
+            //var vehicles = new List<Vehicle>();
+            _carList.Clear();
 
             foreach (var handle in handles)
             {
-                vehicles.Add(new Vehicle(handle));
+                _carList.Add(ObjectCache.GetVehicle(handle));
             }
 
-            return vehicles;
+            return _carList;
 
 #if LEGACYPOOL
             var retval = new List<Vehicle>();
@@ -84,17 +98,20 @@ namespace GTA
 #endif
         }
 
+        static List<Ped> _pedList;
+
         public static List<Ped> GetAllPeds()
         {
             var handles = Pool.Ped.GetAllHandles();
-            var peds = new List<Ped>();
+            //var peds = new List<Ped>();
+            _pedList.Clear();
 
             foreach (var handle in handles)
             {
-                peds.Add(new Ped(handle));
+                _pedList.Add(ObjectCache.GetPed(handle));
             }
 
-            return peds;
+            return _pedList;
 
 #if LEGACYPOOL
             var retval = new List<Ped>();

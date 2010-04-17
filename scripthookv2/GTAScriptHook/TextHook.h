@@ -1,7 +1,7 @@
 #pragma once
 
 namespace GTA {
-	const char* __stdcall GetGXTString(const char* string);
+	void __stdcall GetGXTString(const char* string);
 
 	public ref class TextHook {
 	private:
@@ -12,7 +12,12 @@ namespace GTA {
 		static Dictionary<String^, IntPtr>^ _keyCache;
 	internal:
 		static void Install();
+		static void Initialize();
+#if GTA_SA
 		static const char* GetString(const char* string);
+#else
+		static const wchar_t* GetString(const char* string);
+#endif
 	public:
 		static String^ Get(String^ label);
 

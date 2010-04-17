@@ -111,6 +111,7 @@ namespace GTA
         public static implicit operator Internal.Parameter(Vector3 source)
         {
             // 3 floats + 3 bytes for types
+#if !GTA_III
             byte[] array = new byte[5 * 3];
 
             // set data types
@@ -138,14 +139,47 @@ namespace GTA
             array[12] = (byte)(value >> 8);
             array[13] = (byte)(value >> 16);
             array[14] = (byte)(value >> 24);
+#else
+            // floats are only 2 bytes in III, youknow?
+            byte[] array = new byte[3 * 3];
 
-            return new Internal.Parameter(array);
+            array[0] = 0x06;
+            array[3] = 0x06;
+            array[6] = 0x06;
+
+            short value = (short)(source.X * 16f);
+
+            array[1] = (byte)value;
+            array[2] = (byte)(value >> 8);
+
+            value = (short)(source.Y * 16f);
+
+            array[4] = (byte)value;
+            array[5] = (byte)(value >> 8);
+
+            value = (short)(source.Z * 16f);
+
+            array[7] = (byte)value;
+            array[8] = (byte)(value >> 8);
+#endif
+
+            var p = new Internal.Parameter(array);
+            p._preVal = source.ToSVector();
+            return p;
         }
 
         public SVector ToSVector()
         {
             return new SVector(X, Y, Z);
         }
+
+#if GTA_SA
+        public Vector3 ToScreenCoords()
+        {
+            var retval = NativeFunctions.GetScreenCoords(this.ToSVector());
+            return new Vector3(retval);
+        }
+#endif
 
         public Vector3 GetClosestPathCoordinates(PathType type)
         {
@@ -182,6 +216,11 @@ namespace GTA
             heading = (float)pA;
 
             return new Vector3((float)pX, (float)pY, (float)pZ);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("({0},{1},{2})", X, Y, Z);
         }
     }
 }

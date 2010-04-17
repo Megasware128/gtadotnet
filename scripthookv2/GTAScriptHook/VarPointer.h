@@ -11,6 +11,8 @@ namespace GTA {
 		int _varID;
 
 		void Initialize(int value);
+	internal:
+		void* CreatePointer();
 	public:
 		static VarPointer() {
 			varStorage = gcnew cli::array<int>(512);

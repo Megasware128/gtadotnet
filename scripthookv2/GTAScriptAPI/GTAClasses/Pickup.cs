@@ -75,6 +75,7 @@ namespace GTA
             return retval;
         }
 
+#if !GTA_IV
         public static Pickup CreateCashPickup(Vector3 position, int maxCash, bool permanent)
         {
             var retval = Internal.Function.Call<Pickup>(0x02E1, position, maxCash, permanent);
@@ -83,6 +84,7 @@ namespace GTA
             retval._origPos = position;
             return retval;
         }
+#endif
 
         public static Pickup CreatePickup(Vector3 position, WeaponID weaponType, int ammo)
         {
@@ -126,6 +128,7 @@ namespace GTA
             }
         }
 
+#if GTA_SA
         public int Money
         {
             set
@@ -133,6 +136,7 @@ namespace GTA
                 Internal.Function.Call(0x094a, this, value);
             }
         }
+#endif
 
         public Vector3 Position
         {

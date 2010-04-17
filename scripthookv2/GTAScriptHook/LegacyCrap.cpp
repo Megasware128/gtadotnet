@@ -148,10 +148,29 @@ void _nativeOverridePeds(int* peds) {
 	}
 }
 
+void _playFrontendAudio(int audioID) {
+	DWORD dwFunc = 0x506EA0;
+	DWORD dwClass = 0xB6BC90;
+	float fl1 = 1.0f;
+	int zero = 0;
+
+	__asm {
+		push fl1
+		push zero
+		push audioID
+		mov ecx, dwClass
+		call dwFunc
+	}
+}
+
 #pragma warning(default: 4409)
 #pragma managed
 
 namespace GTA {
+	void NativeFunctions::PlayFrontendAudio(int audioID) {
+		_playFrontendAudio(audioID);
+	}
+
 	void NativeFunctions::OverridePedSpawn(cli::array<int>^ peds) {
 		int pedids[8];
 
@@ -229,6 +248,27 @@ namespace GTA {
 		}
 
 		return nullptr;
+	}
+
+	float NativeFunctions::GetCameraFOV() {
+		CCameraSAInterface* cam = (CCameraSAInterface*)0xB6F028;
+		return (cam->Cams[0].FOV/* / 0.01745329238f*/);
+	}
+
+	void NativeFunctions::SetCameraFOV(float value) {
+		CCameraSAInterface* cam = (CCameraSAInterface*)0xB6F028;
+
+		cam->Cams[0].FOV = (value/* * 0.01745329238f*/);
+	}
+
+	SVector^ NativeFunctions::GetScreenCoords(SVector^ world) {
+		CVector in = CVector(world->pX, world->pY, world->pZ);
+		CVector out;
+		float x, y;
+
+		WorldCoords2ScreenCoords(&in, &out, &x, &y, 0, 0);
+
+		return gcnew SVector(x, y, 0.0f);
 	}
 }
 

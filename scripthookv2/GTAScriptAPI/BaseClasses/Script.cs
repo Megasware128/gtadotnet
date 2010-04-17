@@ -11,8 +11,18 @@ namespace GTA
         public Player Player { get; set; }
 
         public override void OnStart() {
+#if !GTA_SCO
             Player = (Player)new Player(GlobalVariable.Get(2).Value);
+#if GTA_SA
             Player.Character = (Ped)new Ped(GlobalVariable.Get(3).Value);
+#endif
+#if GTA_III
+            Player.Character = (Ped)new Ped(GlobalVariable.Get(11).Value);
+#endif
+#else
+            Player = new Player();
+            Player.Character = new Ped();
+#endif
         }
     }
 

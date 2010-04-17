@@ -19,11 +19,13 @@ namespace GTA
 
         public Ped Character { get; set; }
 
+#if GTA_SA
         public void ForceWeapon(WeaponID type)
         {
             var weapon = new WeaponType(null, type);
             GTAUtils.SetPlayerWeaponSlot(weapon.Slot);
         }
+#endif
 
         public void AddMoney(int amount)
         {

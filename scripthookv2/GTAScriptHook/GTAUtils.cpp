@@ -14,6 +14,28 @@ void PlayerConfigureWeaponSlot(DWORD dwThis, BYTE weaponSlot) {
         call    dwFunc
     }
 }
+
+void GameLoadNow() {
+	DWORD menu = 0xBA6748;
+	DWORD gameLoader = 0x573330;
+	DWORD mpackNumber = 0xB72910;
+
+	_asm {
+		pushad
+		mov ecx, menu
+		call gameLoader
+		mov bl, 1
+		mov [ecx + 32h], bl
+		mov [ecx + 60h], bl
+		mov [ecx + 0xE9], bl
+		mov [mpackNumber], 0
+		mov [ecx + 1B3Ch], 0
+		mov bl, 0
+		mov [ecx + 32h], bl
+		mov [ecx + 33h], bl
+		popad
+	}
+}
 #pragma managed
 #endif
 
@@ -24,8 +46,9 @@ namespace GTA {
 		//Internal::Function::Call(0x0001, 0);
 
 		context->_wakeUpAt = GTAUtils::GetGameTimer() + time;
-		context->_continue->Set();
-		context->_execute->WaitOne();
+		//context->_continue->Set();
+		//context->_execute->WaitOne();
+		context->Yield();
 	}
 
 #ifdef GTA_SA
@@ -36,6 +59,10 @@ namespace GTA {
 		*(BYTE *)0xB7CDB8 = bslotID;
 
 		PlayerConfigureWeaponSlot(*(DWORD *)0xB7CD98, slotID);
+	}
+
+	void GTAUtils::LoadGameNatively() {
+		GameLoadNow();
 	}
 #endif
 

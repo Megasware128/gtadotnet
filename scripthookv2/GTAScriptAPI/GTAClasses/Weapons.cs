@@ -28,7 +28,12 @@ namespace GTA
         {
             get
             {
-                return Internal.Function.Call<int>(0x0781, (int)type);
+                if (!Internal.Function.Call(0x0491, owner, (int)type))
+                {
+                    return -1;
+                }
+
+                return Internal.Function.Call<int>(0x041a, owner, (int)type);
             }
             set
             {
@@ -61,6 +66,14 @@ namespace GTA
         {
             Model model = new Model(Model);
             model.Load();
+        }
+
+        public WeaponID ID
+        {
+            get
+            {
+                return type;
+            }
         }
 
         public int Model
@@ -160,6 +173,16 @@ namespace GTA
             {
                 return GTA.Internal.Function.Call<WeaponID>(0x0470, character);
             }
+        }
+
+        public WeaponType FromSlot(int slot)
+        {
+            VarPointer type = new VarPointer();
+            VarPointer dummy = new VarPointer();
+
+            Internal.Function.Call(0x04B8, character, slot, type, dummy, dummy);
+
+            return this[(WeaponID)type.Value];
         }
 
         public WeaponType this[WeaponID id]

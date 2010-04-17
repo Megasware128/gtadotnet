@@ -163,6 +163,43 @@ namespace GTA
             Internal.Function.Call(0x05c0, _ped, target, duration);
         }
 
+        public void PlayAnimation(string file, string animation, bool loop)
+        {
+            PlayAnimation(file, animation, loop, -2);
+        }
+
+        public void PlayAnimation(string file, string animation, bool loop, int duration)
+        {
+            LoadAnimation(file);
+            Internal.Function.Call(0x0812, _ped, animation, file, 1f, loop, true, true, true, duration);
+            FreeAnimation(file);
+        }
+
+        public static void LoadAnimation(string file)
+        {
+            file = file.ToLower().Replace(".ifp", "");
+
+            if (file != "ped")
+            {
+                Internal.Function.Call(0x04ED, file);
+
+                while (!Internal.Function.Call(0x04EE, file))
+                {
+                    GTAUtils.Wait(0);
+                }
+            }
+        }
+
+        public static void FreeAnimation(string file)
+        {
+            file = file.ToLower().Replace(".ifp", "");
+
+            if (file != "ped")
+            {
+                Internal.Function.Call(0x04EF, file);
+            }
+        }
+
         public void RunTo(Vector3 target)
         {
             RunTo(target, false);
@@ -215,7 +252,7 @@ namespace GTA
                 }
                 else
                 {
-                    Internal.Function.Call(0x072a, _ped, vehicle, (int)seat);
+                    Internal.Function.Call(0x072b, _ped, vehicle, (int)seat);
                 }
             }
         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GTA
 {
-    public class CrashWarning : ScriptInitializer
+    public class CrashWarning : ScriptPostInitializer
     {
         public override void OnGameStart()
         {

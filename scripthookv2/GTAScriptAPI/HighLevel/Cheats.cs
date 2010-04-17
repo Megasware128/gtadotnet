@@ -46,8 +46,22 @@ namespace GTA
         {
             var position = my.Player.Character.Position.Around(5);
 
+            Log.Debug("position read: " + position.ToString());
+
             var car = World.CreateVehicle(carID, position);
+
+            Log.Debug("position car: " + car.Position.ToString());
+            car.LockStatus = VehicleLock.Unlocked;
             car.NoLongerNeeded();
+        }
+
+        public static void SpawnPed(PedID pedID)
+        {
+            var position = my.Player.Character.Position.Around(5);
+
+            var ped = World.CreatePed(pedID, position, 24);
+            ped.Tasks.Wander();
+            ped.NoLongerNeeded();
         }
 
         public static void RegisterCheat(string name, Action callback)

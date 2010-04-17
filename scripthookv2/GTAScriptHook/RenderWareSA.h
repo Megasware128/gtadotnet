@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifndef RENDERWARE_H
+#define RENDERWARE_H
 using namespace System;
 
 #include "RenderWare.h"
@@ -190,7 +192,7 @@ CClothesBuilder_CopyTexture_t	CClothesBuilder_CopyTexture		= (CClothesBuilder_Co
 /*****************************************************************************/
 
 // Matrix copying
-void RwFrameCopyMatrix ( RwFrame * dst, RwFrame * src ) {
+/*void RwFrameCopyMatrix ( RwFrame * dst, RwFrame * src ) {
 	if ( dst == NULL || src == NULL ) return;
 	memcpy(&dst->modelling,&src->modelling,sizeof(RwMatrix));
 	memcpy(&dst->ltm,&src->ltm,sizeof(RwMatrix));
@@ -214,7 +216,7 @@ RwFrame * RwFrameFindFrame ( RwFrame * parent, const char * name ) {
 		ret = ret->next;
 	}
 	return NULL;
-}
+}*/
 
 #define		ARRAY_ModelLoaded				0x8E4CD0 // ##SA##
 
@@ -474,6 +476,8 @@ namespace GTA {
 
 		static void Init() { }
 
+		static IntPtr CreateTexture32(int width, int height);
+
 		//static void ImportTXD ( RWTextureDictionary^ source, unsigned short usModelID );
 	internal:
 		static RwTexture * GetTexFromModel ( unsigned short model, String^ name );
@@ -485,3 +489,4 @@ namespace GTA {
 		static void UnloadTXD( RwTexDictionary* txd );
 	};
 }
+#endif

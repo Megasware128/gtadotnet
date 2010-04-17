@@ -4,6 +4,8 @@
 #include "InternalCalls.h"
 #include "GTAUtils.h"
 #include "ScriptProcessor.h"
+#include "Fibers.h"
+#include <mscoree.h>
 
 using namespace GTA::Internal;
 using namespace System::Threading;
@@ -39,6 +41,10 @@ namespace GTA {
 			_boundKeys = gcnew List<BoundKeyData>();
 		}
 
+		if (_keyBindingsDisabled) {
+			return;
+		}
+
 		for each (BoundKeyData binding in _boundKeys) {
 			if (ScriptProcessor::Instance->_keys[binding._keyCode]) {
 				binding._call();
@@ -54,8 +60,9 @@ namespace GTA {
 		ScriptContext^ context = ScriptContext::current;
 
 		context->_wakeUpAt = GTAUtils::GetGameTimer() + time;
-		context->_continue->Set();
-		context->_execute->WaitOne();
+		//context->_continue->Set();
+		//context->_execute->WaitOne();
+		context->Yield();
 	}
 
 	ScriptContext::ScriptContext(BaseScript^ myScript) {
@@ -66,12 +73,17 @@ namespace GTA {
 		_myScript = myScript;
 		_identifier = myScript->GetType()->Name;
 
+		// WE DON'T USE FIBERS ANYMORE. THESE CAUSE A CRASH IN THE COMMON LANGUAGE RUNTIME, WHICH IS BAD.
+		//_fiber = gcnew Fiber();
+		//_fiber->Run = gcnew Action(this, &ScriptContext::Run);
 		_thread = gcnew Thread(gcnew ThreadStart(this, &ScriptContext::Run)); // it needs strange instantiation stuff
 		_thread->Start();
 	}
 
 	void ScriptContext::Clean() {
 		_thread->Abort();
+		_endNext = true;
+		//delete _fiber;
 	}
 
 	void ScriptContext::WakeUp() {
@@ -81,6 +93,7 @@ namespace GTA {
 			// execute the script
 			current = this;
 			_execute->Set();
+			//_fiber->Resume();
 			// the script runs now. we'll wait until it says it can return.
 			// we take it the script sets its _wakeUpAt itself.
 			_continue->WaitOne();
@@ -103,17 +116,27 @@ namespace GTA {
 			// re-enabled (2010-01-25): this gives all scripts the chance to OnStart before other scripts go 'round.
 			_continue->Set();
 			_execute->WaitOne();
+			//_fiber->Yield();
 
-			try {
-				_myScript->Run(); // the script should loop itself
-			} catch (Exception^ e) {
-				HandleException(e);
-			}
+			_myScript->Run(); // the script should loop itself
+		} catch (ThreadAbortException^) {
+		
 		} catch (Exception^ e) {
 			HandleException(e);
 		} finally {
 			_continue->Set(); // if the script returned, we should still continue
+			//_fiber->Yield();
 			_endNext = true; // to clean up after ourselves
+		}
+	}
+
+	void ScriptContext::Yield() {
+		_continue->Set();
+		_execute->WaitOne();
+
+		if (_endNext) {
+			_continue->Set();
+			_execute->WaitOne();
 		}
 	}
 

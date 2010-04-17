@@ -127,7 +127,11 @@ namespace GTA
 
         public bool InSphere(Vector3 position, Vector3 radius)
         {
+#if !GTA_IV
             return Internal.Function.Call(0x00fe, this, position, radius, false);
+#else
+            return (Position.DistanceTo(position) < radius.pX);
+#endif
         }
 
         public bool IsDriving
@@ -150,7 +154,11 @@ namespace GTA
         {
             get
             {
+#if !GTA_IV
                 return Internal.Function.Call(0x0741, this);
+#else
+                return Internal.Function.Call("IS_PLAYER_BEING_ARRESTED");
+#endif
             }
         }
 
@@ -202,7 +210,11 @@ namespace GTA
 
         public bool DamagedBy(Ped ped)
         {
+#if !GTA_IV
             return Internal.Function.Call(0x051A, this, ped);
+#else
+            return Internal.Function.Call("HAS_CHAR_BEEN_DAMAGED_BY_CHAR", this, ped, false);
+#endif
         }
 
         public bool DamagedBy(Vehicle car)

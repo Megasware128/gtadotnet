@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;GTA_SA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -46,7 +46,16 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'IVDebug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\IVDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;GTA_IV;GTA_SCO</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'IIIDebug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\IIIDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;GTA_III</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -57,6 +66,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -69,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClasses\CrashWarning.cs" />
+    <Compile Include="BaseClasses\Memory.cs" />
+    <Compile Include="BaseClasses\ObjectCache.cs" />
     <Compile Include="BaseClasses\RotationMatrix.cs" />
     <Compile Include="BaseClasses\ReturnTypes.cs" />
     <Compile Include="BaseClasses\Script.cs" />
@@ -87,12 +99,17 @@
     <Compile Include="GTAClasses\Pickup.cs" />
     <Compile Include="GTAClasses\Ped.cs" />
     <Compile Include="GTAClasses\Player.cs" />
+    <Compile Include="GTAClasses\Relationship.cs" />
     <Compile Include="GTAClasses\Sphere.cs" />
     <Compile Include="GTAClasses\Tasks.cs" />
     <Compile Include="GTAClasses\Vehicle.cs" />
     <Compile Include="GTAClasses\Weapons.cs" />
     <Compile Include="GTAClasses\World.cs" />
+    <Compile Include="HighLevel\BaseConsole.cs" />
     <Compile Include="HighLevel\Cheats.cs" />
+    <Compile Include="HighLevel\Console.cs" />
+    <Compile Include="HighLevel\Defer.cs" />
+    <Compile Include="HighLevel\TextDraw.cs" />
     <Compile Include="TestScript1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -111,8 +128,10 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "S:\games\san andreas\GTAScriptAPI.dll"
-copy /y "$(TargetPath)" "S:\games\gta san andreas\GTAScriptAPI.dll"
-copy /y "$(TargetPath)" "S:\games\gta san andreas\citizen\install\GTAScriptAPI.dll"</PostBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "S:\games\san andreas\scripts\GTAScriptAPI.dll"
+copy /y "$(TargetPath)" "S:\games\sav2\gta vice\scripts\GTAScriptAPI.dll"
+copy /y "$(TargetPath)" "S:\games\gta san andreas\scripts\GTAScriptAPI.dll"
+copy /y "$(TargetPath)" "S:\games\gta san andreas\citizen\install-dyn\scripts\GTAScriptAPI.dll"
+copy /y "$(TargetPath)" "S:\games\clean3\scripts\GTAScriptAPI.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>

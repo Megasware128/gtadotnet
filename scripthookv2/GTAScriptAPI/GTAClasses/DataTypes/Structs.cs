@@ -17,7 +17,7 @@ namespace GTA
         public int Minutes { get; set; }
     }
 
-    public struct GTAColor
+    public class GTAColor
     {
         private byte _r;
         private byte _g;
@@ -54,10 +54,14 @@ namespace GTA
             {
                 return _a;
             }
+            set
+            {
+                _a = value;
+            }
         }
 
         public GTAColor(byte r, byte g, byte b)
-            : this(r, g, b, 0)
+            : this(r, g, b, 255)
         {
 
         }

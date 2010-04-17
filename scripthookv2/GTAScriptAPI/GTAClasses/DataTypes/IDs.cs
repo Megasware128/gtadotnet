@@ -24,6 +24,26 @@ namespace GTA
         CenterHeading = 7
     }
 
+    public enum FrontendSound
+    {
+        //Explosion = 0x2B,
+        Garage1 = 0xE,
+        Garage2 = 0xF,
+        Garage3 = 0x10,
+        Garage4 = 0x11,
+        WeaponPickup = 0x6,
+        CollectiblePickup = 0xD,
+        AdrenalinePickup = 0x9,
+        ArmorPickup = 0xA,
+        HealthPickup = 0x8,
+        Pickup = 0xB,
+        MoneyPickup = 0xD,
+        WeaponPickupB = 0x7,
+        USJPassed = 0x2B,
+        Menu1 = 0x23,
+        TimerEnd = 0x21
+    }
+
     public enum PedID
     {
         @null = 0,

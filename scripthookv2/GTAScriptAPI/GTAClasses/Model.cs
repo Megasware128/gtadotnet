@@ -23,12 +23,17 @@ namespace GTA
             IDELoaded = true; // though we may not succeed, this is for the better - no need trying again if we fail
 
             var gtadat = "";
-            var reader = File.OpenText(@"data\gta.dat");
+#if GTA_SA
+            var reader = File.OpenText(Game.InstallFolder + @"\data\gta.dat");
+#endif
+#if GTA_III
+            var reader = File.OpenText(Game.InstallFolder + @"\data\gta3.dat");
+#endif
             gtadat += reader.ReadToEnd();
             reader.Close();
 
             // also load default.dat
-            reader = File.OpenText(@"data\default.dat");
+            reader = File.OpenText(Game.InstallFolder + @"\data\default.dat");
             gtadat += reader.ReadToEnd();
             reader.Close();
 
@@ -44,7 +49,7 @@ namespace GTA
 
                 // no exception checking, because if the file did not exist
                 // the game wouldn't even be able to load
-                StreamReader ide = File.OpenText(filename);
+                StreamReader ide = File.OpenText(Game.InstallFolder + @"\" + filename);
                 string data = ide.ReadToEnd();
                 ide.Close();
 
@@ -69,19 +74,101 @@ namespace GTA
 
         public static bool IsKnown(string name)
         {
+#if !GTA_IV
             LoadIDE();
 
-            return Models.ContainsKey(name.ToLower());
+            if (!Models.ContainsKey(name.ToLower()))
+            {
+                int model = -1;
+
+                if (int.TryParse(name, out model))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+            return false;
+#else
+            return true; // no way to know, right?
+#endif
         }
         #endregion
+
+        public static uint Hash(string str)
+        {
+            uint value = 0, temp;
+            var index = 0;
+            var quoted = false;
+
+            if (str[index] == '"')
+            {
+                quoted = true;
+                index++;
+            }
+
+            str = str.ToLower();
+
+            for (; index < str.Length; index++)
+            {
+                var v = str[index];
+
+                if (quoted && (v == '"')) break;
+
+                if (v == '\\')
+                    v = '/';
+
+                temp = v;
+                temp = temp + value;
+                value = temp << 10;
+                temp += value;
+                value = temp >> 6;
+                value = value ^ temp;
+            }
+
+            temp = value << 3;
+            temp = value + temp;
+            var temp2 = temp >> 11;
+            temp = temp2 ^ temp;
+            temp2 = temp << 15;
+
+            value = temp2 + temp;
+
+            if (value < 2) value += 2;
+
+            return value;
+        }
 
         private int _id;
 
         public Model(string name)
         {
+#if !GTA_IV
             LoadIDE();
 
-            _id = Models[name.ToLower()];
+            if (!Models.ContainsKey(name.ToLower()))
+            {
+                int model = -1;
+
+                if (int.TryParse(name, out model))
+                {
+                    _id = model;
+                }
+                else
+                {
+                    throw new ArgumentException("This model does not exist.", "name");
+                }
+            }
+            else
+            {
+                _id = Models[name.ToLower()];
+            }
+#else
+            _id = (int)Hash(name);
+#endif
         }
 
         public Model(int id)
@@ -92,6 +179,7 @@ namespace GTA
         public void Load()
         {
             Internal.Function.Call(0x0247, ID);
+            Internal.Function.Call(0x038B);
 
             while (!Loaded)
             {

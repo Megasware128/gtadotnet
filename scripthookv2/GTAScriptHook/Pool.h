@@ -18,6 +18,10 @@ namespace GTA {
 		static Pool^ _pedPool;
 		static Pool^ _vehiclePool;
 		static Pool^ _objectPool;
+		static Pool^ _txdPool;
+
+		static List<IntPtr>^ _pointerList;
+		static List<int>^ _handleList;
 	internal:
 		static void InitializeDefault();
 
@@ -27,6 +31,8 @@ namespace GTA {
 
 		IntPtr HandleToPtr(int handle);
 		int PtrToHandle(IntPtr pointer);
+
+		IntPtr GetAtIndex(int index);
 
 		static property Pool^ Ped {
 			Pool^ get() {
@@ -43,6 +49,12 @@ namespace GTA {
 		static property Pool^ Object {
 			Pool^ get() {
 				return _objectPool;
+			}
+		}
+
+		static property Pool^ TXD {
+			Pool^ get() {
+				return _txdPool;
 			}
 		}
 	};

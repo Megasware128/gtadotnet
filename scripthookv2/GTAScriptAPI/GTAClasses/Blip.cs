@@ -229,7 +229,12 @@ namespace GTA
 
         public void MakeInvisibleOnRadar()
         {
-            Internal.Function.Call(0x018b, this, 1);
+            Internal.Function.Call(0x018b, this, 1); // BLIPDISPLAY_MARKERONLY
+        }
+
+        public void MakeInvisibleOnScreen()
+        {
+            Internal.Function.Call(0x018b, this, 2); // MARKER_DISPLAY_BLIPONLY
         }
 
         public BlipColor Color

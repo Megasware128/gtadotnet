@@ -36,6 +36,11 @@ namespace GTA
             return new HandleObject((int)source);
         }
 
+        public override bool Equals(object obj)
+        {
+            return (obj == this);
+        }
+
         public static bool operator ==(HandleObject left, HandleObject right) {
             if (object.ReferenceEquals(left, null))
             {

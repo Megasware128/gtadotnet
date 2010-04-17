@@ -9,19 +9,20 @@ namespace GTA {
 	/// </summary>
 	/// <param name="filename">The output filename. This file will be overwritten.</param>
 	/// <param name="logLevel">The <see cref="LogLevel" /> value which sets the type of messages to output.</param>
-	void Log::Initialize(String^ filename, LogLevel logLevel) {
-		try {
-			_logWriter = gcnew StreamWriter(filename, false);
-		} catch (IOException^) {
-			_logWriter = gcnew StreamWriter(filename + "." + Process::GetCurrentProcess()->Id.ToString());
-		}
+	void Log::Initialize(String^ filename, LogLevel logLevel, bool free) {
+		_filename = filename;
 		_logLevel = logLevel;
+
+		if (free) {
+			_logWriter = gcnew StreamWriter(filename, false);
+			_logWriter->Close();
+		}
 	}
 
 	/// <summary>
 	/// Internal method which writes a message directly to the log file.
 	/// </summary>
-	void Log::Write(String^ message) {
+	void Log::Write(String^ message, LogLevel level) {
 		StackTrace^ trace = gcnew StackTrace();
 		StackFrame^ frame;
 
@@ -29,7 +30,7 @@ namespace GTA {
 			frame = trace->GetFrame(i);
 
 			try {
-				if (!frame->GetMethod()->DeclaringType->Assembly->FullName->Contains("GTAScript")) {
+				if (!frame->GetMethod()->DeclaringType->Assembly->FullName->Contains("GTAScriptHook")) {
 					break;
 				}
 			} catch (NullReferenceException^) { }
@@ -41,10 +42,34 @@ namespace GTA {
 			caller = frame->GetMethod()->DeclaringType->Name + ": ";
 		}
 
+		EventWritten(level, caller + message);
+
+		switch (level) {
+			case LogLevel::Debug:
+				message = "DEBUG: " + message;
+				break;
+			case LogLevel::Info:
+				message = "INFO: " + message;
+				break;
+			case LogLevel::Warning:
+				message = "WARNING: " + message;
+				break;
+			case LogLevel::Error:
+				message = "ERROR: " + message;
+				break;
+		}
+
+		try {
+			_logWriter = gcnew StreamWriter(_filename, true);
+		} catch (IOException^) {
+			_logWriter = gcnew StreamWriter(_filename + "." + Process::GetCurrentProcess()->Id.ToString(), true);
+		}
+
 		String^ text = DateTime::Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo::InvariantCulture) + " - " + caller + message;
 
 		_logWriter->WriteLine(text);
-		_logWriter->Flush();
+		//_logWriter->Flush();
+		_logWriter->Close();
 	}
 
 	/// <summary>
@@ -64,7 +89,7 @@ namespace GTA {
 			return;
 		}
 
-		Write("ERROR: " + message);
+		Write(message, LogLevel::Error);
 	}
 
 	/// <summary>
@@ -76,7 +101,7 @@ namespace GTA {
 			return;
 		}
 
-		Write("WARNING: " + message);
+		Write(message, LogLevel::Warning);
 	}
 
 	/// <summary>
@@ -88,7 +113,7 @@ namespace GTA {
 			return;
 		}
 
-		Write("INFO: " + message);
+		Write(message, LogLevel::Info);
 	}
 
 	/// <summary>
@@ -100,6 +125,6 @@ namespace GTA {
 			return;
 		}
 
-		Write("DEBUG: " + message);
+		Write(message, LogLevel::Debug);
 	}
 }

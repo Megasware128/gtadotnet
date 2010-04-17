@@ -36,6 +36,9 @@ namespace GTA {
 
 				return "Unknown";
 #else
+#ifdef GTA_III
+				return "GTA III";
+#endif
 #ifdef GTA_IV
 				return "GTA IV";
 #endif

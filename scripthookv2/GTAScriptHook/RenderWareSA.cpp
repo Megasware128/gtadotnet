@@ -2,8 +2,9 @@
 
 #include "Stdafx.h"
 #include "Log.h"
+#include "Pool.h"
 
-#ifdef GTA_SA
+#if GTA_SA | GTA_III
 #include "RenderWareSA.h"
 #include "GameVersion.h"
 
@@ -118,6 +119,13 @@ void         RwTexDictionaryRemoveTexture( RwTexDictionary* pTXD, RwTexture* pTe
 }
 
 namespace GTA {
+	IntPtr RenderWare::CreateTexture32(int width, int height) {
+		RwRaster* raster = RwRasterCreate(width, height, 32, rwRASTERFORMAT8888 | 0x4); // rwRASTERTYPETEXTURE
+		RwTexture* texture = RwTextureCreate(raster);
+
+		return IntPtr(texture);
+	}
+
 	bool TXD::Import ( unsigned short usModelID )
 	{
 		// Have we got textures and haven't already imported into this model?
@@ -497,10 +505,40 @@ namespace GTA {
 		CTxdStore_AddRef ( usTXDId );
 	}*/
 
+#if GTA_III
+	RwTexDictionary* __cdecl GetTxd (unsigned int id) {
+		return (RwTexDictionary*)Pool::TXD->GetAtIndex(id).ToPointer();
+	}
+#endif
+
 	static RenderWare::RenderWare() {
 		switch ( GameVersion::Region )
 		{
         // VERSION 1.0 EU ADDRESSES
+#if GTA_III
+		default:
+			// 1.0
+			RwStreamFindChunk					= (RwStreamFindChunk_t)						0x005AA540;
+			RwStreamOpen						= (RwStreamOpen_t)							0x0053AFE0;
+			RwStreamClose						= (RwStreamClose_t)							0x0053AF10;
+			RwTexDictionaryStreamRead		    = (RwTexDictionaryStreamRead_t)				0x005924A0; 
+			RwTexDictionaryAddTexture		    = (RwTexDictionaryAddTexture_t)				0x005A7490;
+			RwTexDictionaryFindNamedTexture		= (RwTexDictionaryFindNamedTexture_t)		0x005A74D0;
+            RwTextureDestroy					= (RwTextureDestroy_t)						0x005A7330;
+            RwRasterUnlock						= (RwRasterUnlock_t)						0x005AD6F0;
+            RwRasterLock						= (RwRasterLock_t)							0x005AD9D0; 
+            RwRasterCreate						= (RwRasterCreate_t)						0x005AD930;
+            RwTextureCreate						= (RwTextureCreate_t)						0x005A72D0;
+
+			SetTextureDict					    = (SetTextureDict_t)				        0x005278C0;
+            CTxdStore_LoadTxd				    = (CTxdStore_LoadTxd_t)				        0x00527700;
+            CTxdStore_GetTxd				    = (CTxdStore_GetTxd_t)				        &GetTxd;
+            CTxdStore_RemoveTxd				    = (CTxdStore_RemoveTxd_t)			        0x00527870;
+            CTxdStore_RemoveRef				    = (CTxdStore_RemoveRef_t)			        0x00527970;
+            CTxdStore_AddRef				    = (CTxdStore_AddRef_t)				        0x00527930; 
+			break;
+#endif
+#if GTA_SA
         case 'E':
         {
             RwStreamFindChunk					= (RwStreamFindChunk_t)						0x007ED310;
@@ -661,6 +699,7 @@ namespace GTA {
 
             break;
         }
+#endif
 		}
 	}
 }
