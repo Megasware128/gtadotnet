@@ -30,7 +30,7 @@ void GoManaged() {
 	// we're really managed now :)
 
 	GTA::Log::Initialize("GTAScriptHook.log", GTA::LogLevel::Debug | GTA::LogLevel::Info | GTA::LogLevel::Warning | GTA::LogLevel::Error, true);
-	GTA::Log::Info("DBNetwork GTA .NET Scripting API (built on " + GetBuildVersion(Assembly::GetCallingAssembly()->GetName()->Version) + ")");
+	GTA::Log::Info("GTA .NET Scripting API (built on " + GetBuildVersion(Assembly::GetCallingAssembly()->GetName()->Version) + ")");
 #ifdef GTA_SA
 	GTA::Log::Info("compiled for GTA: San Andreas");
 #endif

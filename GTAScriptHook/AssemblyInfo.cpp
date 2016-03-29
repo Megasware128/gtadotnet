@@ -14,9 +14,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("GTA .NET Script Hook")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("DBNetwork")];
+[assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("gtadotnet")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) DBNetwork 2009")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c)  2016")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -32,7 +32,7 @@ using namespace System::Security::Permissions;
 // by using the '*' as shown below:
 
 // ##GENVERSION
-[assembly:AssemblyVersionAttribute("2016.03.22.2144")];
+[assembly:AssemblyVersionAttribute("2016.03.29.1121")];
 // #/GENVERSION
 //
 
