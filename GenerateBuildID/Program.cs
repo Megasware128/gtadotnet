@@ -23,7 +23,7 @@ namespace GenerateBuildID
 
                 // generate new strings
                 string genVersion = "// ##GENVERSION\r\n";
-                genVersion += "[assembly:AssemblyVersionAttribute(\"" + dateID + "\")];\r\n";
+                genVersion += "[assembly:AssemblyVersion(\"" + dateID + "\")];\r\n";
                 genVersion += "// #/GENVERSION";
 
                 //string buildDate = = "// ##GENBDATE\r\n";

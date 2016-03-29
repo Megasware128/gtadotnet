@@ -11,14 +11,14 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("GTA .NET Script Hook")];
-[assembly:AssemblyDescriptionAttribute("")];
-[assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("gtadotnet")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c)  2016")];
-[assembly:AssemblyTrademarkAttribute("")];
-[assembly:AssemblyCultureAttribute("")];
+[assembly:AssemblyTitle("GTA .NET Script Hook")];
+[assembly:AssemblyDescription("")];
+[assembly:AssemblyConfiguration("")];
+[assembly:AssemblyCompany("")];
+[assembly:AssemblyProduct("gtadotnet")];
+[assembly:AssemblyCopyright("Copyright (c)  2016")];
+[assembly:AssemblyTrademark("")];
+[assembly:AssemblyCulture("")];
 
 //
 // Version information for an assembly consists of the following four values:
@@ -32,12 +32,12 @@ using namespace System::Security::Permissions;
 // by using the '*' as shown below:
 
 // ##GENVERSION
-[assembly:AssemblyVersionAttribute("2016.03.29.1121")];
+[assembly:AssemblyVersion("2016.03.29.1124")];
 // #/GENVERSION
 //
 
 [assembly:ComVisible(false)];
 
-[assembly:CLSCompliantAttribute(true)];
+[assembly:CLSCompliant(true)];
 
 [assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
