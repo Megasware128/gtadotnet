@@ -234,7 +234,3 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-
-# C++ New Database Engine
-*.VC.db
-*.VC.opendb
