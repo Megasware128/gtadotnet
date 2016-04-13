@@ -263,6 +263,9 @@
       <Project>{20d45210-346a-4c25-9f05-fa01450ce5f7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\GTAScriptLibrary\GTAScriptLibrary.csproj">
+      <Project>{b57c2322-a04b-4313-9f0c-4a51340e2dc4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

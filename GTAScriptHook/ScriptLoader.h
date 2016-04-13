@@ -24,6 +24,8 @@ namespace GTA {
 		}
 	internal:
 		List<String^>^ _loadedAssemblies;
+		List<Assembly^>^ loadedAssemblies;
+		List<Assembly^>^ referenceAssemblies;
 		String^ _rootDirectory;
 
 		bool _gameInitialized;
@@ -32,6 +34,7 @@ namespace GTA {
 		void UnloadScripts();
 		//void UnloadScripts();
 		void LoadAssemblies(String^ folder, String^ filter);
+		void LoadScriptFiles(String^ folder, String^ filter);
 
 		void Initialize();
 		void ProxyTick(DWORD timerDelta);
