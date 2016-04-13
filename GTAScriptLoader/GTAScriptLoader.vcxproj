@@ -85,9 +85,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>
-        copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptLoader.asi"
-      </Command>
+      <Command>copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptLoader.asi"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,9 +107,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>
-        copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptLoader.asi"
-      </Command>
+      <Command>copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptLoader.asi"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='IIIDebug|Win32'">
@@ -131,9 +127,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>
-        copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto 3\GTAScriptLoader.asi"
-      </Command>
+      <Command>copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto 3\GTAScriptLoader.asi"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

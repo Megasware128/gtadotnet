@@ -111,9 +111,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>
-        copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptHook.dll"
-      </Command>
+      <Command>copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\GTAScriptHook.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,10 +147,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>
-        copy /y "$(TargetPath)" "S:\games\san andreas\GTAScriptHook.asi"
-        copy /y "$(TargetPath)" "S:\games\gta san andreas\citizen\install\GTAScriptHook.asi"
-      </Command>
+      <Command>copy /y "$(TargetPath)" "S:\games\san andreas\GTAScriptHook.asi"
+        copy /y "$(TargetPath)" "S:\games\gta san andreas\citizen\install\GTAScriptHook.asi"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='IVDebug|Win32'">
