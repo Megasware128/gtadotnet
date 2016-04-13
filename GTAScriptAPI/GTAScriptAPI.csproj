@@ -158,7 +158,4 @@
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(Configuration)|$(Platform)' == 'IIIDebug|AnyCPU' ">copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto 3\scripts\GTAScriptAPI.dll"</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto San Andreas\scripts\GTAScriptAPI.dll"</PostBuildEvent>
-  </PropertyGroup>
 </Project>
