@@ -31,6 +31,7 @@ namespace GTA {
 		bool _gameInitialized;
 
 		void LoadScripts();
+		void LoadReferences();
 		void UnloadScripts();
 		//void UnloadScripts();
 		void LoadAssemblies(String^ folder, String^ filter);

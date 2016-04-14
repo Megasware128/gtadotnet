@@ -113,6 +113,14 @@ namespace GTA {
 		LoadAssemblies(baseDir + "\\scripts", "*.dll");
 		LoadAssemblies(baseDir, "*.net"); // don't think this is going to be used anyway
 
+		LoadReferences();
+
+		LoadScriptFiles(baseDir + "\\scripts", "*.cs");
+		LoadScriptFiles(baseDir + "\\scripts", "*.vb");
+	}
+
+	void ScriptLoader::LoadReferences()
+	{
 		Assembly^ executingAssembly = Assembly::GetExecutingAssembly();
 		referenceAssemblies = gcnew List<Assembly^>();
 		for each (AssemblyName^ asmName in executingAssembly->GetReferencedAssemblies())
@@ -121,9 +129,6 @@ namespace GTA {
 		}
 		referenceAssemblies->Add(executingAssembly);
 		referenceAssemblies->AddRange(loadedAssemblies);
-
-		LoadScriptFiles(baseDir + "\\scripts", "*.cs");
-		LoadScriptFiles(baseDir + "\\scripts", "*.vb");
 	}
 
 	void ScriptLoader::LoadAssembly(Assembly^ assembly) {
