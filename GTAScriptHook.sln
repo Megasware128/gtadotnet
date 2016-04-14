@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTAScriptHook", "GTAScriptHook\GTAScriptHook.vcxproj", "{104F4394-5036-41F9-9C5F-E77E3A5CA03A}"
 EndProject
@@ -84,8 +84,8 @@ Global
 		{20D45210-346A-4C25-9F05-FA01450CE5F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{20D45210-346A-4C25-9F05-FA01450CE5F7}.Release|Win32.ActiveCfg = Release|Any CPU
 		{20D45210-346A-4C25-9F05-FA01450CE5F7}.Release|x86.ActiveCfg = Release|Any CPU
-		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Any CPU.Build.0 = Debug|x86
 		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{17449BE1-D03A-4C5C-BDAA-F3295BC3738A}.Debug|Win32.ActiveCfg = Debug|Any CPU
