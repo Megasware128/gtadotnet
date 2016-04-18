@@ -153,6 +153,8 @@ namespace GTA
             }
         }
 
+        // TODO: Fix vehicle
+
         private Modifications modifications;
         public Modifications Modifications
         {
