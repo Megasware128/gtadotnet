@@ -215,7 +215,10 @@ namespace GTA {
 					_loadedAssemblies->Add(fileInfo->Name);
 				}
 			}
-			finally{
+			catch(Compiler::CompilationException^ ex) {
+				Log::Error(ex);
+			}
+			finally {
 				delete fileInfo;
 			}
 		}

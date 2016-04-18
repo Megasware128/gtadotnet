@@ -70,26 +70,28 @@ namespace GTA
                     var result = compilation.Emit(memoryStream);
                     if (result.Success)
                         return Assembly.Load(memoryStream.GetBuffer());
-                    else throw CreateException(result.Diagnostics);
+                    else throw new CompilationException(result.Diagnostics);
                 }
             }
-        }
-
-        private Exception CreateException(IEnumerable<Diagnostic> diagnostics)
-        {
-
-            return new CompilationException();
         }
 
         [Serializable]
         public class CompilationException : Exception
         {
-            public CompilationException() { }
-            public CompilationException(string message) : base(message) { }
-            public CompilationException(string message, Exception inner) : base(message, inner) { }
-            protected CompilationException(
-              System.Runtime.Serialization.SerializationInfo info,
-              System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+            private readonly string diagnostics;
+
+            internal CompilationException(IEnumerable<Diagnostic> diagnostics)
+            {
+                this.diagnostics = diagnostics.Select(d => d.ToString()).Aggregate((a, r) => a + Environment.NewLine + r);
+            }
+
+            public override string Message
+            {
+                get
+                {
+                    return $"Compilation failed:{Environment.NewLine}{diagnostics}";
+                }
+            }
         }
     }
 }
