@@ -32,7 +32,8 @@ namespace GTA {
 				if (AssemblyName::GetAssemblyName(name)->FullName == args->Name) {
 					return Assembly::LoadFile(name);
 				}
-			} catch (Exception^) {
+			}
+			catch (Exception^) {
 				// nothing
 			}
 		}
@@ -44,7 +45,8 @@ namespace GTA {
 				if (AssemblyName::GetAssemblyName(name)->FullName == args->Name) {
 					return Assembly::LoadFile(name);
 				}
-			} catch (Exception^) {
+			}
+			catch (Exception^) {
 				// nothing
 			}
 		}
@@ -101,6 +103,7 @@ namespace GTA {
 		}
 
 		_loadedAssemblies = gcnew List<String^>();
+		loadedAssemblies = gcnew List<Assembly^>();
 
 		AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(&ScriptLoader::ResolveAssembly);
 
@@ -109,6 +112,23 @@ namespace GTA {
 		LoadAssemblies(baseDir + "\\scripts", "GTAScriptAPI.dll");
 		LoadAssemblies(baseDir + "\\scripts", "*.dll");
 		LoadAssemblies(baseDir, "*.net"); // don't think this is going to be used anyway
+
+		LoadReferences();
+
+		LoadScriptFiles(baseDir + "\\scripts", "*.cs");
+		LoadScriptFiles(baseDir + "\\scripts", "*.vb");
+	}
+
+	void ScriptLoader::LoadReferences()
+	{
+		Assembly^ executingAssembly = Assembly::GetExecutingAssembly();
+		referenceAssemblies = gcnew List<Assembly^>();
+		for each (AssemblyName^ asmName in executingAssembly->GetReferencedAssemblies())
+		{
+			referenceAssemblies->Add(Assembly::Load(asmName));
+		}
+		referenceAssemblies->Add(executingAssembly);
+		referenceAssemblies->AddRange(loadedAssemblies);
 	}
 
 	void ScriptLoader::LoadAssembly(Assembly^ assembly) {
@@ -135,13 +155,15 @@ namespace GTA {
 							ScriptPostInitializer^ script = (ScriptPostInitializer^)Activator::CreateInstance(type);
 							script->OnGameStart();
 						}
-					} catch (Exception^ e) {
+					}
+					catch (Exception^ e) {
 						Log::Error("An exception occurred during initialization of the script " + type->Name + ".");
 						Log::Error(e);
 					}
 				}
 			}
-		} catch (ReflectionTypeLoadException^ e) {
+		}
+		catch (ReflectionTypeLoadException^ e) {
 			// likely a non-v2hook script
 			Log::Warn("Assembly " + assembly->GetName() + " could not be loaded because of a loader exception (perhaps this is made for an older GTAScriptHook?)");
 			Log::Warn("Exception: " + e->LoaderExceptions[0]->ToString()->Split('\n')[0]->Trim());
@@ -164,17 +186,40 @@ namespace GTA {
 					try {
 						File::Copy(fileName, targetName, true);
 						loaded = true;
-					} catch (IOException^) {
+					}
+					catch (IOException^) {
 						targetName = origTargetName->Replace(".dll", "-" + i.ToString() + ".dll");
 						i++;
 					}
 				}
 
 				Assembly^ assembly = Assembly::LoadFile(targetName);
-				
 				LoadAssembly(assembly);
-
+				loadedAssemblies->Add(assembly);
 				_loadedAssemblies->Add(fileName);
+			}
+		}
+	}
+
+	void ScriptLoader::LoadScriptFiles(String ^ folder, String ^ filter)
+	{
+		cli::array<String^>^ files = Directory::GetFiles(folder, filter);
+
+		for each (String^ file in files) {
+			FileInfo^ fileInfo = gcnew FileInfo(file);
+
+			try {
+				if (!_loadedAssemblies->Contains(fileInfo->Name)) {
+					Assembly^ assembly = Compiler(referenceAssemblies).CompileFile(fileInfo);
+					LoadAssembly(assembly);
+					_loadedAssemblies->Add(fileInfo->Name);
+				}
+			}
+			catch(Compiler::CompilationException^ ex) {
+				Log::Error(ex);
+			}
+			finally {
+				delete fileInfo;
 			}
 		}
 	}
