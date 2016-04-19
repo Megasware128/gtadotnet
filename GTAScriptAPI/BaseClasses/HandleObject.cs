@@ -38,7 +38,7 @@ namespace GTA
 
         public override bool Equals(object obj)
         {
-            return ((HandleObject)obj == this);
+            return (obj as HandleObject == this);
         }
 
         public static bool operator ==(HandleObject left, HandleObject right)
