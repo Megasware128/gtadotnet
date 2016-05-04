@@ -32,9 +32,9 @@ namespace GTA {
 
 		AppDomainSetup^ domainSetup = gcnew AppDomainSetup();
 		domainSetup->ApplicationBase = AppDomain::CurrentDomain->BaseDirectory;
-		System::Security::NamedPermissionSet^ namedPermissionSet = Policy::PolicyLevel::CreateAppDomainLevel()->GetNamedPermissionSet("FullTrust");
+		PermissionSet^ permissionSet = gcnew PermissionSet(Permissions::PermissionState::Unrestricted);
 
-		_scriptDomain = AppDomain::CreateDomain("GTAScriptHook", nullptr, domainSetup, namedPermissionSet);
+		_scriptDomain = AppDomain::CreateDomain("GTAScriptHook", nullptr, domainSetup,  permissionSet);
 		_scriptDomain->InitializeLifetimeService();
 
 		_scriptDomain->AssemblyResolve += gcnew ResolveEventHandler(&ScriptLoader::ResolveAssembly);
@@ -66,4 +66,4 @@ namespace GTA {
 	void DomainThingy::SetMainDomain(AppDomain^ domain) {
 		ScriptDomain::_mainDomain = domain;
 	}
-}	
+}

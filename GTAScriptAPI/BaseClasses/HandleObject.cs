@@ -38,10 +38,11 @@ namespace GTA
 
         public override bool Equals(object obj)
         {
-            return (obj == this);
+            return (obj as HandleObject == this);
         }
 
-        public static bool operator ==(HandleObject left, HandleObject right) {
+        public static bool operator ==(HandleObject left, HandleObject right)
+        {
             if (object.ReferenceEquals(left, null))
             {
                 return (object.ReferenceEquals(right, null));

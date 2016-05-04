@@ -42,22 +42,24 @@ void PulseRadars() {
 	ScriptDomain::_scriptDomain->DoCallBack(gcnew CrossAppDomainDelegate(&PulseRadarWorker::PulseRadars));
 }
 
+#pragma unmanaged
 void _declspec(naked) HOOK_CRadar__DrawRadarGangOverlay()
 {
-    _asm
-    {
-        pushad
-    }
+	_asm
+	{
+		pushad
+	}
 
 	PulseRadars();
 
-    _asm
-    {
-        popad
-        retn
-    }
+	_asm
+	{
+		popad
+		retn
+	}
 }
 
+#pragma managed
 void RadarHook::Install() {
 	if (!installed) {
 		radarAreaHook.initialize("aaaaaa", 6, (PBYTE)0x586650);
@@ -99,36 +101,36 @@ void DrawRadarEventArgs::DrawArea(float x1, float y1, float x2, float y2, Drawin
 
 CClientRadarArea::CClientRadarArea ()
 {
-    // Init
-    //m_pManager = pManager;
+	// Init
+	//m_pManager = pManager;
 	if (m_pRadarAreaManager == nullptr) {
 		m_pRadarAreaManager = gcnew CClientRadarAreaManager();
 	}
-    SetColor ( 0xFFFFFFFF );
-    m_bFlashing = false;
-    m_ulFlashCycleStart = 0;
-    m_bStreamedIn = true;
+	SetColor ( 0xFFFFFFFF );
+	m_bFlashing = false;
+	m_ulFlashCycleStart = 0;
+	m_bStreamedIn = true;
 
-    //SetTypeName ( "radararea" );
+	//SetTypeName ( "radararea" );
 
-    // Make sure we're visible/invisible according to our dimension
-    RelateDimension ( m_pRadarAreaManager->GetDimension () );
+	// Make sure we're visible/invisible according to our dimension
+	RelateDimension ( m_pRadarAreaManager->GetDimension () );
 
-    // Add us to the manager's list
-    m_pRadarAreaManager->AddToList ( this );
+	// Add us to the manager's list
+	m_pRadarAreaManager->AddToList ( this );
 }
 
 
 CClientRadarArea::~CClientRadarArea ( void )
 {
-    // Remove us from the manager's list
-    Unlink ();
+	// Remove us from the manager's list
+	Unlink ();
 }
 
 
 void CClientRadarArea::Unlink ( void )
 {
-    m_pRadarAreaManager->RemoveFromList ( this );
+	m_pRadarAreaManager->RemoveFromList ( this );
 }
 
 
@@ -140,77 +142,77 @@ void CClientRadarArea::DoPulse ( void )
 
 void CClientRadarArea::DoPulse ( bool bRender )
 {
-    #define RADAR_FLASH_CYCLETIME 1000
+	#define RADAR_FLASH_CYCLETIME 1000
 
 	//GTA::Initialize::Log("Rendering in area...");
 
-    // Suppose to show?
-    if ( m_bStreamedIn )
-    {
+	// Suppose to show?
+	if ( m_bStreamedIn )
+	{
 		//GTA::Initialize::Log("Rendering in AR4...");
 
-        // If it's flashing, calculate a new alpha
-        unsigned long ulColor = m_ulColor;
-     
-        if ( m_bFlashing )
-        {
-            // Time to start a new cycle?
-            unsigned long ulCurrentTime = timeGetTime();
-            if ( m_ulFlashCycleStart == 0 )
-            {
-                m_ulFlashCycleStart = ulCurrentTime;
-            }
-            // Time to end the cycle and start a new?
-            else if ( ulCurrentTime >= m_ulFlashCycleStart + RADAR_FLASH_CYCLETIME )
-            {
-                m_ulFlashCycleStart = ulCurrentTime;
-            }
+		// If it's flashing, calculate a new alpha
+		unsigned long ulColor = m_ulColor;
+	 
+		if ( m_bFlashing )
+		{
+			// Time to start a new cycle?
+			unsigned long ulCurrentTime = timeGetTime();
+			if ( m_ulFlashCycleStart == 0 )
+			{
+				m_ulFlashCycleStart = ulCurrentTime;
+			}
+			// Time to end the cycle and start a new?
+			else if ( ulCurrentTime >= m_ulFlashCycleStart + RADAR_FLASH_CYCLETIME )
+			{
+				m_ulFlashCycleStart = ulCurrentTime;
+			}
 
-            // Calculate the alpha based on the last cycle time and the cycle intervals
-            float fAlphaFactor;
+			// Calculate the alpha based on the last cycle time and the cycle intervals
+			float fAlphaFactor;
 
-            // We're in the fade in part of the cycle?
-            if ( ulCurrentTime >= m_ulFlashCycleStart + RADAR_FLASH_CYCLETIME / 2 )
-            {
-                // Calculate the alpha-factor
-                fAlphaFactor = static_cast < float > ( ulCurrentTime - m_ulFlashCycleStart - RADAR_FLASH_CYCLETIME / 2 ) / ( RADAR_FLASH_CYCLETIME / 2 );
-            }
-            else
-            {
-                // Calculate the alpha-factor
-                fAlphaFactor = 1.0f - static_cast < float > ( ulCurrentTime - m_ulFlashCycleStart ) / ( RADAR_FLASH_CYCLETIME / 2 );
-            }
+			// We're in the fade in part of the cycle?
+			if ( ulCurrentTime >= m_ulFlashCycleStart + RADAR_FLASH_CYCLETIME / 2 )
+			{
+				// Calculate the alpha-factor
+				fAlphaFactor = static_cast < float > ( ulCurrentTime - m_ulFlashCycleStart - RADAR_FLASH_CYCLETIME / 2 ) / ( RADAR_FLASH_CYCLETIME / 2 );
+			}
+			else
+			{
+				// Calculate the alpha-factor
+				fAlphaFactor = 1.0f - static_cast < float > ( ulCurrentTime - m_ulFlashCycleStart ) / ( RADAR_FLASH_CYCLETIME / 2 );
+			}
 
-            // Multiply the alpha-factor with the alpha we're supposed to have to find what alpha to use and set it
-            unsigned char ucAlpha = static_cast < unsigned char > ( fAlphaFactor * static_cast < float > ( ( ulColor & 0xFF000000 ) >> 24 ) );
-            ulColor &= 0x00FFFFFF;
-            ulColor |= ucAlpha << 24;
-        }
+			// Multiply the alpha-factor with the alpha we're supposed to have to find what alpha to use and set it
+			unsigned char ucAlpha = static_cast < unsigned char > ( fAlphaFactor * static_cast < float > ( ( ulColor & 0xFF000000 ) >> 24 ) );
+			ulColor &= 0x00FFFFFF;
+			ulColor |= ucAlpha << 24;
+		}
 
-	    // Only render the radar area if we are told to
-	    if ( bRender )
-	    {
+		// Only render the radar area if we are told to
+		if ( bRender )
+		{
 			/*GTA::Initialize::Log("Rendering in AR.");
 			GTA::Initialize::Log(System::String::Format("fx1 {0} fy1 {1} fx2 {2} fy2 {3} ulc {4}", m_vecPosition->pX + m_vecSize->pX, m_vecPosition->pY,
-                                                    m_vecPosition->pX, m_vecPosition->pY + m_vecSize->pY,
-												    ulColor));
+													m_vecPosition->pX, m_vecPosition->pY + m_vecSize->pY,
+													ulColor));
 			*/
-		    // Draw it
-		    DrawAreaOnRadar ( m_vecPosition->pX + m_vecSize->pX, m_vecPosition->pY,
-                                                    m_vecPosition->pX, m_vecPosition->pY + m_vecSize->pY,
-												    ulColor );
+			// Draw it
+			DrawAreaOnRadar ( m_vecPosition->pX + m_vecSize->pX, m_vecPosition->pY,
+													m_vecPosition->pX, m_vecPosition->pY + m_vecSize->pY,
+													ulColor );
 
 			/*DrawAreaOnRadar ( m_vecSize->pX, m_vecSize->pY, m_vecPosition->pX, m_vecPosition->pY,
-                                                    
-												    ulColor );*/
-	    }
-    }
+													
+													ulColor );*/
+		}
+	}
 }
 
 
 void CClientRadarArea::SetColor ( unsigned long ulColor )
 {
-    m_ulColor = ulColor;
+	m_ulColor = ulColor;
 }
 
 
@@ -222,14 +224,14 @@ void CClientRadarArea::SetColor ( unsigned char ucR, unsigned char ucG, unsigned
 
 void CClientRadarArea::SetDimension ( unsigned short usDimension )
 {
-    //m_usDimension = usDimension;
-    RelateDimension ( m_pRadarAreaManager->GetDimension () );
+	//m_usDimension = usDimension;
+	RelateDimension ( m_pRadarAreaManager->GetDimension () );
 }
 
 
 void CClientRadarArea::RelateDimension ( unsigned short usDimension )
 {
-    m_bStreamedIn = true;
+	m_bStreamedIn = true;
 }
 };
 #endif
