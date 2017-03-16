@@ -32,7 +32,7 @@ using namespace System::Security::Permissions;
 // by using the '*' as shown below:
 
 // ##GENVERSION
-[assembly:AssemblyVersion("2016.04.19.1455")];
+[assembly:AssemblyVersion("2016.05.04.2123")];
 // #/GENVERSION
 //
 

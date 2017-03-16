@@ -152,5 +152,30 @@ namespace GTA
                 return Internal.Function.Call(0x056e, this);
             }
         }
+
+        // TODO: Fix vehicle
+
+        private Modifications modifications;
+        public Modifications Modifications
+        {
+            get
+            {
+                if (modifications != null)
+                    modifications = new Modifications(this);
+                return modifications;
+            }
+        }
+    }
+
+    public class Modifications
+    {
+        private readonly Vehicle vehicle;
+
+        internal Modifications(Vehicle vehicle)
+        {
+            this.vehicle = vehicle;
+        }
+
+        // TODO: Modifications: Colors, Wheels, Nitrous, Hydraulics
     }
 }
