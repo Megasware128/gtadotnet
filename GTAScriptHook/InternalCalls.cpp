@@ -58,7 +58,7 @@ int ExecuteBuffer(BYTE *sbuf, DWORD *lvars, DWORD buflen, int gameVersion)
 	gst.bStartNewScript = 1;
 	gst.dwBaseIP = (DWORD) sbuf;
 	gst.dwScriptIP = (DWORD) sbuf;
-	gst.strName[0] = 'n';
+	gst.strName[0] = 'n'; // TODO: Take a look at this
 	gst.strName[1] = 'e';
 	gst.strName[2] = 't';
 	gst.strName[3] = '\0';
@@ -180,7 +180,7 @@ namespace GTA {
 					cxt.Push<float>(vec->pZ);
 				}
 			}
-			
+
 			IntPtr idptr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(identifier);
 			NativeInvoke::Invoke(&cxt, (char*)idptr.ToPointer());
 			Runtime::InteropServices::Marshal::FreeHGlobal(idptr);
@@ -324,7 +324,7 @@ namespace GTA {
 			return ((VarPointer^)parameters[pi]._preVal)->Value;
 			/*} else {
 			pi = parameters->Length;
-			
+
 			for (; (pi - parameters->Length) < ptrCount; pi++) {
 				parameters[pi]->Value;
 			}
@@ -343,7 +343,7 @@ namespace GTA {
 
 			memset(&ScriptBuf, 0, sizeof(ScriptBuf));
 			memcpy(&ScriptBuf, &scmid, 2);
-			
+
 			int buf_pos = 2;
 			int var_id = 0;
 			DWORD LocalVars[32];
@@ -375,11 +375,11 @@ namespace GTA {
 
 			/*String^ output = "Script buffer: ";
 
-            for (int i = 0; i < buf_pos; i++) {
-                    output += ScriptBuf[i].ToString("X2") + " ";
-            }
+			for (int i = 0; i < buf_pos; i++) {
+					output += ScriptBuf[i].ToString("X2") + " ";
+			}
 
-            Log::Debug(output);*/
+			Log::Debug(output);*/
 
 			int result = ExecuteBuffer(ScriptBuf, LocalVars, buf_pos, GameVersion::VersionNumber);
 
